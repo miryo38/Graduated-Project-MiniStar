@@ -14,23 +14,29 @@ var { height, width } = Dimensions.get('window');
 const SearchScreen = ({props,navigation}) => {
   const {Post} = useStore(); // 0522새로고침용
   const [posts,setPosts] = useState(null)
-  const [serachposts, searchsetPosts] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [searchText, setSearchText] = useState('');
-  const [count, setcount] = useState(null);
   const [Bestposts,setBestPosts] = useState(null)
   const [ready, setReady] = useState(true)
   const {Lsearch, setLsearch,setLsearchcount,Lsearchcount}  = useStore()
   const [userData, setUserData] = useState(null);
+  const [random, setRandom] = useState([]); 
 
   const tags = ["인물", "배경", "음식", "동물", "물건", "문화"]
   const [changepost,setchangePosts] = useState(null)
-  
+  const getRandomIndex = (length) => {
+    var random =  parseInt(Math.random() * length);
+    return random;
+    }
+    
+
+
   const getPosts = async ()=>{
     const querySanp = await firestore().collection('posts').orderBy('postTime', 'desc').get()
     const allposts = querySanp.docs.map(docSnap=>docSnap.data())
    //  console.log(allusers)
    setchangePosts(allposts)
+
+
 }
 const getBestPosts = async ()=>{
   const querySanp = await firestore()
@@ -44,14 +50,14 @@ const getBestPosts = async ()=>{
 }
 
 
-const handleSearchTextChange =  async (text) => {
+const handleSearchTextChange =  async () => {
   
   try {
     const list = [];
 
     await firestore()
       .collection('posts')
-      .where('tag', '==' , text)
+      .where('tag', '==' , Lsearch)
       .orderBy('postTime', 'desc')
       .get()
       .then((querySnapshot) => {
@@ -84,16 +90,22 @@ const handleSearchTextChange =  async (text) => {
         });
    
       })
-      
       setchangePosts(list);
-      setLsearch(text);
+
+  firestore()
+  .collection('users')
+  .doc(firebase.auth().currentUser.uid)
+  .update({
+    Lsearch : Lsearch
+  })
+    setLsearchcount();  
+      
       
       
     if (loading) {
       setLoading(false);
     }
   
-    console.log('Posts: ', posts);
   } catch (e) {
     console.log(e);
   }
@@ -102,7 +114,6 @@ const handleSearchTextChange =  async (text) => {
 const SubmitSearch = async () => {
     
     
-
   firestore()
   .collection('users')
   .doc(firebase.auth().currentUser.uid)
@@ -154,37 +165,26 @@ const TagList =  async (tags) => {
             id: doc.id,
             uid,
             postid,
-            userName: 'Test Name',
-            userImg:
-              'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
             postTime: postTime,
             tag,
             post,
             postImg,
-            liked: false,
             likes,
             comments,
           });
         });
       }).then(() => {
         
-        firestore()
-        .collection('tagcounts')
-        .doc(firebase.auth().currentUser.uid)
-        .collection('counts')
-        .doc(tags)
-        .update({
-         count : 0
-        })
+        setchangePosts(list);
+
+        
       })
      
-    setchangePosts(list);
 
     if (loading) {
       setLoading(false);
     }
 
-    console.log('Posts: ', posts);
   } catch (e) {
     console.log(e);
   }
@@ -250,6 +250,7 @@ useEffect(()=>{
     getPosts()
     getBestPosts()
     getUser()
+    getRandomIndex()
   },[Post,Lsearchcount])
 
   const RenderCard = ({item})=>{
@@ -293,12 +294,12 @@ useEffect(()=>{
 			<View style={styles.row}>
 				<Icon name="search" size={20} color={theme.colors.searchIcon} />
 				<TextInput style={styles.input}
-         onChangeText={(text) => {handleSearchTextChange(text)}}
+         onChangeText={(text) => {setLsearch(text)}}
          placeholder="Search"
           maxLength={10} />
 			</View>
 		</View>
-    <TouchableOpacity onPress={SubmitSearch}>
+    <TouchableOpacity onPress={handleSearchTextChange}>
     <View style={styles.serachBtn}>
     <Text style={{color : theme.colors.searchText ,}}>검색</Text>
     
@@ -310,9 +311,7 @@ useEffect(()=>{
     <View style={{flexDirection : 'row'}}>
 
     <Text style={{fontSize : 20, marginLeft : 5, fontFamily : 'Jalnan',marginTop : 5, color : 'orange'}}>🎉인기 게시물 Top 5🎉  </Text>
-    <TouchableOpacity style={styles.button2} onPress={() => TagList(userData ? userData.Lsearch : '')}>
-              <Text style={styles.userBtnTxt2}>최근 검색어</Text>
-          </TouchableOpacity>
+
           </View>
     <View style={{flexDirection : 'row', marginBottom : 10}}>
     <ScrollView
@@ -339,27 +338,18 @@ useEffect(()=>{
     <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator = {false}>
-    <TouchableOpacity style={styles.button} onPress={() => getBesttagPosts()}>
-              <Text style={styles.userBtnTxt}>인기</Text>
+        
+          <TouchableOpacity style={styles.button2} onPress={() => getPosts()}>
+              <Text style={styles.userBtnTxt2}>전체 게시물</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => TagList(tags[0])}>
-              <Text style={styles.userBtnTxt}>인물</Text>
+          <TouchableOpacity style={styles.button2} onPress={() => TagList(userData ? userData.Lsearch : '')}>
+              <Text style={styles.userBtnTxt2}>최근 검색어</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => TagList(tags[1])}>
-              <Text style={styles.userBtnTxt}>배경</Text>
+
+          <TouchableOpacity style={styles.button2} onPress={() => TagList(tags[getRandomIndex(tags.length)])}>
+              <Text style={styles.userBtnTxt2}>추천 게시물</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => TagList(tags[2])}>
-              <Text style={styles.userBtnTxt}>음식</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => TagList(tags[3])}>
-              <Text style={styles.userBtnTxt}>동물</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => TagList(tags[4])}>
-              <Text style={styles.userBtnTxt}>물건</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => TagList(tags[5])}>
-              <Text style={styles.userBtnTxt}>문화</Text>
-          </TouchableOpacity>
+
           </ScrollView>
     </View>
     <View style={{marginTop : 10}}>
@@ -404,7 +394,7 @@ const styles = StyleSheet.create({
     marginRight : 8,
     width: 50,
     height: 30,
-    backgroundColor: "#e1d4d2",
+    backgroundColor: "#orange",
     borderColor: 'orange',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
@@ -431,7 +421,11 @@ const styles = StyleSheet.create({
   },
   userBtnTxt: {
     fontFamily: "Jalnan",
+
     color: '#3e3e3e',
+
+    color: '#fff',
+
     textAlign:'center',  
     fontSize:15,
   },

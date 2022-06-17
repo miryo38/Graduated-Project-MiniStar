@@ -36,8 +36,8 @@ const FeedStack = ({navigation}) => (
         title: '자유로운 소통공간 스타',
         
         headerTitleStyle: {
-         fontFamily: 'Jalnan'
-         
+         fontFamily: 'Jalnan',
+         color : 'orange'
         },
         headerStyle: {
           shadowColor: '#fff',
@@ -50,7 +50,7 @@ const FeedStack = ({navigation}) => (
               name="plus"
               size={22}
               backgroundColor="white"
-              color="black"
+              color="orange"
               onPress={() => navigation.navigate('AddPost')}
             />
           </View>

@@ -89,6 +89,9 @@ const StoreHome = ({navigation}) => {
     getShopDataB();
     getShopDataP();
     getUser();
+  }, []);
+  useEffect(() => {
+    getUser();
   }, [isPoint]);
   const CategoryList = () => {
     return (

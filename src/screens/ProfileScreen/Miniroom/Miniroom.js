@@ -1,10 +1,6 @@
-import { View, Text,TouchableOpacity,StyleSheet,Image,SafeAreaView,Dimensions,Animated,PanResponder, ImageBackground,Button} from 'react-native';
+import { View, Text,TouchableOpacity,StyleSheet,Image,SafeAreaView,Dimensions,Animated,PanResponder, ImageBackground,Button, Alert} from 'react-native';
 import React,{useState,useEffect,useRef} from 'react'
-import { DraxView,DraxProvider,DraxList } from 'react-native-drax';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
-
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-
 import {useNavigation} from '@react-navigation/native';
 import MiniroomBox from '../../../components/MiniroomBox/MiniroomBox';
 import useStore from '../../../../store/store';
@@ -16,12 +12,50 @@ import COLORS from '../Miniroom/colors';
 
 const initial = 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Background%2Fbackground1.png?alt=media&token=f59b87fe-3a69-46b9-aed6-6455dd80ba45';
 const width = Dimensions.get('window').width / 2 - 30;
+const tlranf = [
+  {
+    id:0,
+    address:'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/newAnimals%2F1.png?alt=media&token=05f16d97-3ecb-4e70-876a-5013d797529e'
+  },
+  {
+    id:1,
+    address:'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/newAnimals%2F1.png?alt=media&token=05f16d97-3ecb-4e70-876a-5013d797529e'
+  },
+  {
+    id:2,
+    address:'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/newAnimals%2F2.png?alt=media&token=d5c4f039-dd12-44f4-b4a7-2830c47f0f9a'
+  },
+  {
+    id:3,
+    address:'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/newAnimals%2F3.png?alt=media&token=aeb9d714-6666-4e03-ae57-1b1b75e5f6ad'
+  },
+  {
+    id:4,
+    address:'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/newAnimals%2F4.png?alt=media&token=c389d522-673f-41e1-8187-2d28c5893538'
+  },
+  {
+    id:5,
+    address:'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/newAnimals%2F5.png?alt=media&token=02bcfaa9-a313-4568-8d1a-e7603a580578'
+  },
+  {
+    id:6,
+    address:'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/newAnimals%2F6.png?alt=media&token=e3a9f6af-8c79-44ac-a8d2-7c4c2fc06754'
+  },
+  {
+    id:7,
+    address:'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/newAnimals%2F7.png?alt=media&token=627aa75a-9f3d-49b6-bd95-486087f3d39a'
+  },
+  {
+    id:8,
+    address:'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/newAnimals%2F1.png?alt=media&token=05f16d97-3ecb-4e70-876a-5013d797529e'
+  },
+]
+
 const Miniroom = () => {  
   const usersBackgroundCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background').doc(firebase.auth().currentUser.uid+ 'mid');
   const usersMinimeCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('minime').doc(firebase.auth().currentUser.uid+ 'mid');
   const usersToolCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool'); 
   const usersMinipatCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('minipat').doc(firebase.auth().currentUser.uid+ 'mid');
-
 
   const InventoolCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('tool'); 
   const InvenminimeCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('minime');
@@ -45,7 +79,26 @@ const Miniroom = () => {
   const [InvenBackground, setInvenBackground] = useState();
   const [InvenTool, setInvenTool] = useState();
   const [InvenMinipat, setInvenMinipat] = useState();
-
+  
+  const [MinipatCount, setMinipatCount] = useState(0);
+  //const {MinipatCount,setMinipatCount} = useStore();
+  const onMinipatPress = () => {
+    if(MinipatCount<8) //물주는 횟수
+    {
+      setMinipatCount(MinipatCount+1)  
+       }
+      else {
+        if(MinipatCount==8){setMinipatCount(0);
+        
+        updateMinipat(tlranf[MinipatCount].address,MinipatCount);
+      }
+        Alert.alert(
+        '알림',
+        `이미 다 컸어요${MinipatCount}`,
+        );
+      }
+      updateMinipat(tlranf[MinipatCount].address,MinipatCount);
+  }
 
 /*미니룸 보여지는곳 전용*/
 const getTool = async () => {
@@ -76,6 +129,7 @@ const getMinime = async () => {
     try {
       const data = await usersMinipatCollection.get();
       setMinipat(data._data.address);
+      setMinipatCount(data._data.count);
     } catch (error) {
       console.log(error.message);
     }
@@ -113,7 +167,6 @@ const getMinime = async () => {
   };
   const updateMinime = (newaddress) => {
     usersMinimeCollection.update({address:newaddress});
-    //addBackground.collection('background').add({address:newaddress});
     console.log('저장완료');  
     console.log(newaddress);
     setisMinime(newaddress);
@@ -141,10 +194,13 @@ const getMinime = async () => {
       console.log(error.message);
     }
   };
-  const updateMinipat = (newaddress) => {
-    usersMinipatCollection.update({address:newaddress});
+  const updateMinipat = (newaddress,count) => {
+    usersMinipatCollection.set({address:newaddress,count : count});
+    //usersMinipatCollection.update({address:newaddress,count : count});
+    
     console.log('저장완료');  
     console.log(newaddress);
+    console.log('저장전',count);
     setMinipat(newaddress);
   }
 
@@ -153,14 +209,17 @@ const getMinime = async () => {
      getMinime();
      getTool();
      getMinipatData();
-     getMinimeInven();
-     getBackgroundInven();
-     getToolInven();
-     getMinipatInven();
      return () => {
        onSave();
      }
-   }, [tooladdress,Backaddress,BuyItem,placeX,countItem,isMinime]);
+   }, []);
+   useEffect(() => {
+    getMinimeInven();
+    getBackgroundInven();
+    getToolInven();
+    getMinipatInven();
+  }, [BuyItem]);
+   
   
   
   const uploadImage = async () => {
@@ -258,7 +317,7 @@ const getMinime = async () => {
             if (catergoryIndex === 0) return addTool(plant.address,plant.name);
             if (catergoryIndex === 1) return updateMinime(plant.address);
             if (catergoryIndex === 2) return updateBackground(plant.address);
-            if (catergoryIndex === 3) return updateMinipat(plant.address);
+            if (catergoryIndex === 3) return updateMinipat(plant.address,0);
         }
           }}>
         <View style={styles.card}>
@@ -292,7 +351,10 @@ const getMinime = async () => {
 
               </View>
           < Image style={styles.minime} source={{uri:`${Minime ? Minime : initial}`}}></ Image>
-          < Image style={styles.minipat} source={{uri:`${Minipat ? Minipat : initial}`}}></ Image>
+          
+          <TouchableOpacity style={styles.minipat} onPress={onMinipatPress}>
+          < Image style={{borderWidth:1,flex:1}} source={{uri:`${Minipat ? Minipat : initial}`}}></ Image>
+          </TouchableOpacity>
             <View style={styles.item}>
             {
         tool?.map((row, idx) => {
@@ -304,6 +366,9 @@ const getMinime = async () => {
             </ViewShot>
             <SafeAreaView
       style={{flex: 1, paddingHorizontal: 20, backgroundColor: COLORS.white}}>
+                        <View style={{alignItems:'flex-end'}}>
+                        <Text style={{fontSize: 16, color: 'grey', fontFamily : "Jalnan"}}>물 준  횟수 : {MinipatCount.valueOf()}</Text>
+                        </View>
             <CategoryList />
             <FlatList
         columnWrapperStyle={{justifyContent: 'flex-start'}}

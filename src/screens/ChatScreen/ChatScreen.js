@@ -103,7 +103,8 @@ export default function ChatScreen({route}) {
                  {...props}
                  wrapperStyle={{
                    right: {
-                     backgroundColor:"#8a2be2",
+                     backgroundColor:"orange",
+                     
 
                    }
                    
