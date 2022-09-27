@@ -23,10 +23,8 @@ const SearchScreen = ({navigation}) => {
   const isFocused = useIsFocused();
   const tags = ["인물", "배경", "음식", "동물", "물건", "문화"]
 
-  const [maxnumT, setMaxnumT] = useState(null);
 
   const [search, setSearch] = useState(null);
-
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
   };
@@ -70,7 +68,7 @@ const getCounts = async() => {
 
 const getPosts = async ()=>{
     
-  const querySanp = await firestore().collection('posts').where('tag', '==' , '동물').orderBy('postTime', 'desc').get()
+  const querySanp = await firestore().collection('posts').where('tag', '==' , userData ? userData.InterSearch : '동물').orderBy('postTime', 'desc').get()
   const allposts = querySanp.docs.map(docSnap=>docSnap.data())
  setchangePosts(allposts)
 
@@ -157,10 +155,7 @@ const AllBestPosts =  async () => {
   try {
     const list = [];
     
-    await firestore()
-      .collection('posts')
-      .orderBy('likes', 'desc')
-      .get()
+    await firestore().collection('posts').where('tag', '==' , userData ? userData.InterSearch : '동물').orderBy('postTime', 'desc').get()
       .then((querySnapshot) => {
         // console.log('Total Posts: ', querySnapshot.size);
         querySnapshot.forEach((doc) => {
@@ -306,11 +301,19 @@ const handleSearchTextChange =  async () => {
         
 
         })()} 
+
+        
         const searchs =[search.인물,search.배경,search.음식,search.동물,search.물건,search.문화]
-        const maxnum = 0;  
+        var maxnum2 = 0;
+        var maxnumT2 = '';
           for (let i = 0; i < tags.length; i++) {
-            if (searchs[i] > maxnum) {
-              setMaxnumT(tags[i])
+            if (searchs[i] > maxnum2) {
+              maxnum2 = searchs[i]
+              //setmaxnum(searchs[i])
+              maxnumT2 =tags[i]
+              console.log(maxnum2)
+              console.log(maxnumT2)
+           
             }
           }
           
@@ -318,7 +321,7 @@ const handleSearchTextChange =  async () => {
   .collection('users')
   .doc(firebase.auth().currentUser.uid)
   .update({
-    InterSearch : maxnumT
+    InterSearch : maxnumT2
   })
       
     if (loading) {
@@ -512,7 +515,7 @@ useEffect(()=>{
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button2} onPress={() => AllBestPosts()}>
-              <Text style={styles.userBtnTxt2}>인기 게시물</Text>
+              <Text style={styles.userBtnTxt2}>관심 게시물</Text>
           </TouchableOpacity>
 
           </ScrollView>
