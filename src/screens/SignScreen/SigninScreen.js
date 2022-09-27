@@ -1,9 +1,8 @@
 import React, {useState,useContext} from 'react';
-import {View, Text, SafeAreaView,StyleSheet,Image} from 'react-native';
+import {View, Text, SafeAreaView,StyleSheet,Image,Keyboard,TouchableWithoutFeedback} from 'react-native';
 import FormInput_2 from '../../components/shared/FormInput_2';
 import { COLORS } from '../../components/constants/theme';
 import SocialButton from '../../components/shared/SocialButton';
-import { Klogin } from '../../utils/auth';
 import FormButton_2 from '../../components/shared/FormButton_2';
 import {AuthContext} from '../../utils/AuthProvider';
 
@@ -17,9 +16,8 @@ const SigninScreen = ({navigation}) => {
 
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <View style={styles.container}>
-      
-        
     <SafeAreaView
       style={{
         backgroundColor: COLORS.white,
@@ -92,10 +90,8 @@ const SigninScreen = ({navigation}) => {
       </View>
       
     </SafeAreaView>
-    
-    
     </View>
-    
+    </TouchableWithoutFeedback>
   );
 };
 

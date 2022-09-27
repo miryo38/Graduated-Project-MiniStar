@@ -1,15 +1,11 @@
 import { View, Text,TouchableOpacity,StyleSheet,FlatList,Image,TextInput,RefreshControl,Alert} from 'react-native';
-import React, {useState, useEffect, useContext,useCallback} from 'react';
+import React, {useState, useEffect,useCallback} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import firebase  from '@react-native-firebase/app';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/Ionicons'
-import {FAB} from 'react-native-paper'
 import { theme } from '../../../Chat/ChatTheme';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import 'moment/locale/ko';
-import { AuthContext } from '../../../utils/AuthProvider';
 
 const Weblog = ({navigation,route}) => {
   const [number, setNumber] = useState(0);
@@ -200,7 +196,7 @@ const Weblog = ({navigation,route}) => {
       <View style={styles.container}>
          <View style={styles.row}>
          <Ionicons name="chatbubble-ellipses" size={25} color="gray" /> 
-         <Text style={{marginBottom : 20, marginLeft : 10, fontSize : 18}}><Text style={{color : 'black', fontWeight : 'bold',}}>{CommentData.length}</Text>개의 방명록이 있어요.</Text>
+         <Text style={{marginBottom : 20, marginLeft : 10, fontSize : 18,fontFamily : 'Jalnan'}}><Text style={{color : 'black', fontWeight : 'bold',}}>{CommentData.length}</Text>개의 방명록이 있어요.</Text>
        
          </View>
          
@@ -300,8 +296,10 @@ const styles = StyleSheet.create({
       fontSize: theme.fontSize.title,
       color: theme.colors.title,
       width: 210,
-      marginLeft : 50,
-      fontSize : 30
+      marginLeft : 30,
+      fontSize : 30,
+      
+      
     },
     message: {
       fontSize: theme.fontSize.message,
@@ -326,7 +324,7 @@ const styles = StyleSheet.create({
       borderBottomColor: 'orange',
       borderColor:'rgba(0,0,0,0)',
       height: 45,
-      width : 340,
+      width : 320,
       fontFamily:'Jalnan',
       fontSize:16,
       borderWidth: 1
@@ -340,7 +338,7 @@ const styles = StyleSheet.create({
       color: 'black'
     },
     userBtn: {
-      width : 395,
+      width : '100%',
       backgroundColor:'#ffffff',
       borderColor: '#ffffff',
       borderBottomColor:'#fff',

@@ -6,6 +6,7 @@ import firebase from '@react-native-firebase/app'
 import firestore from '@react-native-firebase/firestore';
 import { AuthContext } from '../../utils/AuthProvider';
 import useStore from '../../../store/store';
+import Icons from 'react-native-vector-icons/FontAwesome5';
 
 
 const PresentScreen = ({navigation, route}) => {  
@@ -80,10 +81,11 @@ const addItem = async () => {
       console.log(`update 완료`);
       console.log(`이름 : ${route.params.name} 가격: ${route.params.price} 주소 : ${route.params.img} `);
       setBuyItem(route.params.name);
-      navigation.navigate('Message');
+      
       Alert.alert(
         '선물 완료!',
         );
+        navigation.navigate('Message');
      
     } catch (error) {
       console.log(error.message);
@@ -101,8 +103,11 @@ const addItem = async () => {
   <View style={{flex:1}}>
     <View style={style.header}>
       <Icon name="arrow-back" size={28} onPress={() => navigation.goBack()} />
-      <Text>Point {userData ? userData.point : ''}</Text>
-    </View>
+      <Text style={{fontSize:18,marginTop:3, fontFamily: "Jalnan",}}>
+        <Icons
+                name="coins"
+                size={18}/>  {userData ? userData.point : ''}</Text>
+      </View>
     <View style={style.imageContainer}>
       
       <Image source={{uri : route.params.img}} style={{resizeMode: 'contain', flex: 1,aspectRatio:1}} />

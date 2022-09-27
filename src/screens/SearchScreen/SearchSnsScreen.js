@@ -1,4 +1,4 @@
-import React, {useEffect, useState,useCallback,useContext,useRef} from 'react';
+import React, {useEffect, useState,useCallback} from 'react';
 import {
   View,
   ScrollView,
@@ -8,13 +8,11 @@ import {
   SafeAreaView,
   Alert,
   RefreshControl,
-  Dimensions,
   Image,
-  TouchableOpacity,
-  TouchableWithoutFeedback
+  TouchableOpacity
 } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import colors from '../../res/colors';
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useIsFocused } from '@react-navigation/native';
 import PostCard from '../../utils/PostCard';
@@ -24,30 +22,22 @@ import firestore from '@react-native-firebase/firestore';
 import  firebase from '@react-native-firebase/app';
 import {Container} from '../../../styles/FeedStyles';
 import { AuthContext } from '../../utils/AuthProvider';
-import ADIcon from 'react-native-vector-icons/AntDesign';
-import FontistoIcon from 'react-native-vector-icons/Fontisto';
-import AppText from '../../components/Sns/AppText';
-import moment from 'moment';
-import { useNavigation } from '@react-navigation/native';
+import useStore from '../../../store/store';
+import Loading from '../../utils/Loading';
+import { useNavigation } from "@react-navigation/native";
 
-const SearchSnsScreen = ({route}) => {
+
+const SnsScreen = ({props,route}) => {
   const [refreshing, setRefreshing] = useState(false);
   const [posts, setPosts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleted, setDeleted] = useState(false);
   const [currentUserLike, setCurrentUserLike] = useState(false)
-  const {user, logout} = useContext(AuthContext);
-  const [userData, setUserData] = useState(null);
-  const [isLiked, setIsLiked] = useState(false);
-  const refUserPosts = useRef(null);
+  const {Post,SetPost} = useStore(); // 0522새로고침용
+  const [ready, setReady] = useState(true)
+  const [Bestposts,setBestPosts] = useState(null)
   const navigation = useNavigation();
 
-  const handleLiked = () => {
-    !isLiked
-      ? setNumberOfLikes(numberOfLikes + 1)
-      : setNumberOfLikes(numberOfLikes - 1);
-    setIsLiked(!isLiked);
-  };
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -55,19 +45,17 @@ const SearchSnsScreen = ({route}) => {
     setRefreshing(true);
     wait(2000).then(() => setRefreshing(false));
   }, []);
-  
-  const getUser = async() => {
-    await firestore()
-    .collection('users')
-    .doc(route.params.uid)
+    
+  const getBestPosts = async ()=>{
+    const querySanp = await firestore()
+    .collection('posts')
+    .orderBy('likes', 'desc')
+    .limit((5))
     .get()
-    .then((documentSnapshot) => {
-      if( documentSnapshot.exists ) {
-        console.log('User Data', documentSnapshot.data());
-        setUserData(documentSnapshot.data());
-      }
-    })
-  }
+    const allposts = querySanp.docs.map(docSnap=>docSnap.data())
+   //  console.log(allusers)
+   setBestPosts(allposts)
+  } 
 
   const fetchPosts = async () => {
     try {
@@ -91,6 +79,7 @@ const SearchSnsScreen = ({route}) => {
               postTime,
               likes,  
               comments,
+              postid,
             } = doc.data();
             list.push({
               id: doc.id,
@@ -100,6 +89,7 @@ const SearchSnsScreen = ({route}) => {
               post,
               liked: false,
               likes,
+              postid,
               comments,
             });
           });
@@ -120,19 +110,13 @@ const SearchSnsScreen = ({route}) => {
 
 
   useEffect(() => {
+    setTimeout(()=>{
+      setReady(false)
+      },1000)   
     fetchPosts();
     setDeleted(false);
-    getUser()
-    const unsubscribe = navigation.addListener('focus', e => {
-      if(refUserPosts.current){
-          refUserPosts.current.scrollToIndex({ animated: true, index: postIndex });
-      }
-  });
-
-  return () => {
-      unsubscribe();
-  };
-  }, [deleted,refreshing]);
+    getBestPosts();
+  }, [deleted,refreshing,Post]);
 
   const handleDelete = (postId) => {
     Alert.alert(
@@ -200,14 +184,13 @@ const SearchSnsScreen = ({route}) => {
       .catch((e) => console.log('Error deleting posst.', e));
   };
 
-  const ListHeader = () => {
-    return null;
-  };
+ 
   return (
-      
-
+    ready ? <Loading/> :  (
+<ScrollView style={{flex: 1}}>
         <Container>
-
+          
+ 
           <FlatList
             data={posts}
             renderItem={({item}) => (
@@ -223,8 +206,6 @@ const SearchSnsScreen = ({route}) => {
               />
             )}
             keyExtractor={(item) => item.id}
-            ListHeaderComponent={ListHeader}
-            ListFooterComponent={ListHeader}
             showsVerticalScrollIndicator={false}
             refreshControl={
               <RefreshControl
@@ -234,80 +215,9 @@ const SearchSnsScreen = ({route}) => {
             }
           />
         </Container>
-    
-   
+        </ScrollView>
+    )
   );
 };
 
-export default SearchSnsScreen;
-
-const Styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'white',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 12,
-    marginBottom: 6,
-    marginStart: 10,
-    marginEnd: 10,
-    alignItems: 'center',
-  },
-  nameContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  personImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 30,
-  },
-  personName: {
-    color: 'black',
-    marginStart: 10,
-    fontWeight: 'bold',
-  },
-  placeName: {
-    color: colors.text,
-    marginStart: 10,
-    fontSize: 12,
-  },
-  iconMore: {
-    height: 15,
-    width: 15,
-  },
-  postImg: {
-    height: Dimensions.get('screen').height / 3,
-    width: Dimensions.get('screen').width,
-    
-  },
-  container2: {
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    //paddingStart: 20,
-    marginEnd: 15,
-    marginTop: 15,
-  },
-  actionIcons: {
-    width: 23,
-    height: 23,
-    marginStart: 15,
-  },
-  container3: {
-    padding: 15,
-  },
-  iconContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 10,
-  },
-  leftIcons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: 100,
-  },
-  likes: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  });
+export default SnsScreen;

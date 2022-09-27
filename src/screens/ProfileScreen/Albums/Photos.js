@@ -1,19 +1,18 @@
 import { View, Text ,Image,FlatList,StyleSheet,TouchableOpacity,TextInput,Dimensions} from 'react-native'
 import React,{useState,useEffect,useContext} from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons'
 import firestore from '@react-native-firebase/firestore'
 import firebase  from '@react-native-firebase/app';
 import ActionButton from 'react-native-action-button';
 import useStore from '../../../../store/store'
+import { useIsFocused } from '@react-navigation/native';
+
 var { height, width } = Dimensions.get('window');
 
 const Photos = ({route,navigation}) => {
   const {PhotoName,Body,Post} = useStore();
   const [posts,setPosts] = useState([])
-  const [serachposts, searchsetPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchText, setSearchText] = useState('');
+  const isFocused = useIsFocused();
   const {uid} = route.params
   const getPosts = async ()=>{
     const querySanp = await firestore().collection('Albums').doc(route.params ? route.params.uid : user.uid).collection('groups').doc(route.params.fname).collection('photos').orderBy('postTime', 'desc').get()
@@ -26,7 +25,7 @@ const Photos = ({route,navigation}) => {
 
 useEffect(()=>{
     getPosts()
-},[PhotoName,Post,Body])
+},[PhotoName,Post,Body,isFocused])
 
 const RenderCard = ({item})=>{
     return (
@@ -55,7 +54,7 @@ const RenderCard = ({item})=>{
         <TouchableOpacity>
         <View style={styles.folderContainer}>
       <Icon name="folder"  size={23} color="orange"/>
-      <Text style={{fontSize : 18,fontFamily: 'DungGeunMo'}}> {route.params.fname}</Text>
+      <Text style={{fontSize : 18,fontFamily: 'Jalnan'}}> {route.params.fname}</Text>
         
         
         
@@ -65,7 +64,7 @@ const RenderCard = ({item})=>{
 
         <View style={styles.titleConainer}>
       
-      <Text style={{fontSize : 25,fontFamily: 'DungGeunMo'}}>{route.params.name} 님의 사진첩</Text>
+      <Text style={{fontSize : 25,fontFamily: 'Jalnan'}}>{route.params.name} 님의 사진첩</Text>
 
       <Text style={{color : '#129fcd', fontSize : 20,fontFamily: 'DungGeunMo',marginTop : 5,}}>{posts.length}</Text>
         

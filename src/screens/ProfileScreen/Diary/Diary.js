@@ -27,7 +27,7 @@ LocaleConfig.defaultLocale = 'fr';
 
 
 
-const Diary = ({onDelete}) => {
+const Diary = ({route}) => {
   const {DiaryPost,Checkday,setCheckday2} = useStore();
   const [posts, setPosts] = useState(null);
   const navigation = useNavigation();
@@ -52,7 +52,7 @@ const Diary = ({onDelete}) => {
     console.log(Checkday);
     const querySanp = await firestore()
     .collection('Diary')
-    .doc(firebase.auth().currentUser.uid)
+    .doc(route.params ? route.params.uid : firebase.auth().currentUser.uid)
     .collection('DiaryDetails')
     .doc(Checkday)
     .get()
@@ -80,59 +80,27 @@ const Diary = ({onDelete}) => {
       '확실합니까?',
       [
         {
-          text: 'Cancel',
+          text: '취소',
           onPress: () => console.log('Cancel Pressed!'),
           style: 'cancel',
         },
         {
-          text: 'Confirm',
-          onPress: () => deletePost(postId),
+          text: '확인',
+          onPress: () => deleteFirestoreData(),
         },
       ],
       {cancelable: false},
     );
   };
 
-  const deletePost = (postId) => {
-    console.log('Current Post Id: ', postId);
+  
 
+  const deleteFirestoreData = () => {
     firestore()
     .collection('Diary')
     .doc(firebase.auth().currentUser.uid)
     .collection('DiaryDetails')
-    .doc(postId)
-    .get()
-      .then((documentSnapshot) => {
-        if (documentSnapshot.exists) {
-          const {img} = documentSnapshot.data();
-
-          if (img != null) {
-            const storageRef = storage().refFromURL(img);
-            const imageRef = storage().ref(storageRef.fullPath);
-
-            imageRef
-              .delete()
-              .then(() => {
-                console.log(`${img} 성공적으로 삭제되었습니다.`);
-                deleteFirestoreData(postId);
-              })
-              .catch((e) => {
-                console.log('Error while deleting the image. ', e);
-              });
-            // If the post image is not available
-          } else {
-            deleteFirestoreData(postId);
-          }
-        }
-      });
-  };
-
-  const deleteFirestoreData = (postId) => {
-    firestore()
-    .collection('Diary')
-    .doc(firebase.auth().currentUser.uid)
-    .collection('DiaryDetails')
-    .doc(postId)
+    .doc(checkday)
       .delete()
       .then(() => {
         Alert.alert(
@@ -140,6 +108,7 @@ const Diary = ({onDelete}) => {
           '당신의 글이 성공적으로 삭제되었습니다!',
         );
         setDeleted(true);
+        navigation.navigate('Diary')
       })
       .catch((e) => console.log('Error deleting posst.', e));
   };
@@ -185,19 +154,43 @@ const Diary = ({onDelete}) => {
     monthFormat={'yyyy년 M월'} />
     
     
-    <TouchableOpacity Style={styles.itemConstainer}>
+    <View Style={styles.itemConstainer}>
     <View style={styles.content}>
   <View style={styles.diaryTitle}>
   <Text style={{fontSize : 20,fontFamily: "Jalnan"}}>{DiaryData.post}</Text>
+
+
   <Text style={styles.checkday}>{checkday}</Text>
+  <View style={{flexDirection: 'row', alignSelf : 'flex-end'}}>
+
+  <TouchableOpacity style={styles.button} onPress={() => handleDelete()}>
+  <Text style={styles.Buttontxt}>삭제</Text>
+  
+  </TouchableOpacity>
+</View>
   </View>
   
   <View style={styles.picContainer}>
 <Image  source={{uri: DiaryData.img}} style={styles.pic}/> 
   </View>
   <Text style={{fontSize : 20,fontFamily: "Jalnan",}}>{DiaryData.body}</Text>
+  <View style={{flexDirection: 'row',}}>
+  <View style={{marginTop : 23, marginBottom : 15}}>
+        </View>
+        <TouchableOpacity style={{justifyContent : 'center'}} onPress={() => navigation.navigate('Comment',{uid : uid, postid: item.postid, name : item.post, foldername : route.params.foldername } )}>
+         
+         <View style={{  marginTop : 10, marginBottom : 15,marginRight : 10}}>
+          <Ionicons name="chatbubble-ellipses" size={25} color="gray" />
+         </View>
+         </TouchableOpacity>
+         <View style={{marginTop : 20, marginBottom : 15}}>
+         <TouchableOpacity style={{}} onPress={() => navigation.navigate('Comment',{uid : uid, postid: item.postid, name : item.post, foldername : route.params.foldername} )}>  
+        <Text style={{fontSize : 17, fontFamily: 'Jalnan'}}>댓글</Text>
+        </TouchableOpacity>
+        </View>
+</View>
     </View>
-  </TouchableOpacity>
+  </View>
    
 </View>
 </ScrollView>
@@ -226,8 +219,32 @@ itemConstainer:{
     fontSize : 20,
     alignSelf: 'flex-end',
     fontSize:18,
-    marginRight:40,
-    fontFamily: 'DungGeunMo'
+    marginRight:10,
+    fontFamily: 'DungGeunMo',
+    marginBottom : 10
+  },
+  Buttontxt:{
+    fontSize : 20,
+    alignSelf: 'flex-end',
+    fontSize:18,
+    fontFamily: 'Jalnan',
+    color : 'white',
+    alignSelf : 'center'
+
+  },
+  button: {
+    width: 50,
+    height: 30,
+    backgroundColor: "orange",
+    borderColor: 'orange',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    borderBottomColor:'#fff',
+    justifyContent: "center",
+    alignItems: "flex-end",
+    marginTop : 10
   },
   diaryTitle:{
     marginBottom:10,
@@ -240,8 +257,9 @@ itemConstainer:{
     marginBottom:20,
   },
   pic:{
-    width:'100%',
+    width:'150%',
     height:'100%',
+    alignSelf : 'center'
 
   },
   line:{

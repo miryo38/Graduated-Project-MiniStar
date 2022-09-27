@@ -1,6 +1,5 @@
 import { View, Text ,Image,FlatList,StyleSheet,TouchableOpacity,TextInput,Dimensions,Alert} from 'react-native'
 import React,{useState,useEffect,useContext} from 'react'
-import SearchBar from "react-native-dynamic-search-bar";
 import firestore from '@react-native-firebase/firestore'
 import firebase  from '@react-native-firebase/app';
 import useStore from '../../../../store/store'
@@ -43,7 +42,7 @@ const SubmitFolder = async () => {
         <View style={styles.title}>
             <Text style = {{color : 'black', fontFamily : "Jalnan",fontSize:20}}>폴더 이름</Text>
         </View>    
-
+        <View style={{flexDirection : 'row'}}>
         <TextInput
             style={styles.textInput}
             value={name}
@@ -51,8 +50,9 @@ const SubmitFolder = async () => {
             placeholder="폴더 이름을 입력해주세요."
           />
           <TouchableOpacity onPress={() => SubmitFolder()}>
-          <Text style ={{color : 'black',marginLeft : 350, fontFamily : "Jalnan" ,fontSize:20}}>추가</Text>
+          <Text style ={{color : 'black', fontFamily : "Jalnan" ,fontSize:20 ,paddingHorizontal: 10, marginTop : 10}}>추가</Text>
           </TouchableOpacity>
+          </View>
     </View>
   );
 };
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10,
     height: 45,
-    width : 350,
+    width : 300,
     borderRadius: 10,
     borderColor: 'gray',
     borderWidth: 1,

@@ -1,10 +1,8 @@
 import { View, Text ,Image,FlatList,StyleSheet,TouchableOpacity,TextInput,Dimensions,RefreshControl,Alert,TouchableWithoutFeedback} from 'react-native'
 import React, {useState, useEffect, useContext,useCallback} from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons'
 import firestore from '@react-native-firebase/firestore'
 import firebase  from '@react-native-firebase/app';
-import ActionButton from 'react-native-action-button';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import useStore from '../../../../store/store'
@@ -142,7 +140,7 @@ const RenderCard = ({item})=>{
     return (
         <View style={styles.container}>
         <View style={styles.title2}>
-        <Text style={{fontSize : 20, fontFamily: 'DungGeunMo', padding : 5}}> {item.post}</Text>
+        <Text style={{fontSize : 20, fontFamily: 'Jalnan', padding : 5}}> {item.post}</Text>
         
         {(() => { 
       if (route.params.uid === firebase.auth().currentUser.uid)    
@@ -155,29 +153,17 @@ const RenderCard = ({item})=>{
         </View>
             
         <Image source={{uri: item.img}} style={styles.postImg} />
-        <Text style={{fontSize : 20, fontFamily: 'DungGeunMo', padding : 5}}> {item.body}</Text>
+        <Text style={{fontSize : 20, fontFamily: 'Jalnan', padding : 5}}> {item.body}</Text>
         <View style={styles.row}>
-        <Text style={{fontSize : 20, fontFamily: 'DungGeunMo', padding : 5, marginBottom : 10}}> {moment(item.postTime.toDate()).fromNow()}</Text>
+        <Text style={{fontSize : 20, fontFamily: 'Jalnan', padding : 5, marginBottom : 10}}> {moment(item.postTime.toDate()).fromNow()}</Text>
         
         </View>
         <View style={styles.row2}>
         <View style={styles.title3}>
-        <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => navigation.goBack()}>
-         
-         <View style={{padding : 10, marginTop : 10, marginBottom : 15}}>
-         <TouchableOpacity onPress={handleLiked}>
-            {isLiked ? (
-          <Ionicons name="heart" size={25} color="#ff0800" />
-          ) : (
-          <Ionicons name="heart" size={25} color="#545454" />
-            )}
-            </TouchableOpacity>
-         </View>
-         </TouchableOpacity>
+        
          <View style={{marginTop : 23, marginBottom : 15}}>
-        <Text style={{fontSize : 17, fontFamily: 'DungGeunMo'}}>추천</Text>
         </View>
-        <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => navigation.navigate('Comment',{uid : uid, postid: item.postid, name : item.post, foldername : route.params.foldername } )}>
+        <TouchableOpacity style={{justifyContent : 'center'}} onPress={() => navigation.navigate('Comment',{uid : uid, postid: item.postid, name : item.post, foldername : route.params.foldername } )}>
          
          <View style={{padding : 10  ,marginTop : 10, marginBottom : 15}}>
           <Ionicons name="chatbubble-ellipses" size={25} color="gray" />
@@ -185,7 +171,7 @@ const RenderCard = ({item})=>{
          </TouchableOpacity>
          <View style={{marginTop : 23, marginBottom : 15}}>
          <TouchableOpacity style={{}} onPress={() => navigation.navigate('Comment',{uid : uid, postid: item.postid, name : item.post, foldername : route.params.foldername} )}>  
-        <Text style={{fontSize : 17, fontFamily: 'DungGeunMo'}}>댓글</Text>
+        <Text style={{fontSize : 17, fontFamily: 'Jalnan'}}>댓글</Text>
         </TouchableOpacity>
         </View>
         

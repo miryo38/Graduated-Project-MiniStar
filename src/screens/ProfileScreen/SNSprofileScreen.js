@@ -13,6 +13,7 @@ import { AuthContext } from '../../utils/AuthProvider';
 import firebase  from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
 import PostCard from '../../utils/PostCard';
+
 const SNSProfileScreen = ({navigation, route}) => {
   const {user, logout} = useContext(AuthContext);
 
@@ -167,7 +168,23 @@ const SNSProfileScreen = ({navigation, route}) => {
         {userData ? userData.about || '자유로운 소통공간 미니스타!' : ''}
         </Text>
         <View style={styles.userBtnWrapper}>
-          {route.params ? (
+          
+          {firebase.auth().currentUser.uid === userData ? userData.uid : ''  ? (
+            <>
+             <TouchableOpacity
+                style={styles.userBtn}
+                onPress={() => {
+                  navigation.navigate('EditProfile');
+                }}>
+                <Text style={styles.userBtnTxt}>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.userBtn} onPress={() => logout()}>
+                <Text style={styles.userBtnTxt}>Logout</Text>
+              </TouchableOpacity>
+              
+              
+            </>
+          ) : (
             <>
               <TouchableOpacity style={styles.userBtn}  onPress={() => navigation.navigate('CHAT', {name:userData.name,uid:userData.uid,img:userData.userImg,about:userData.about
         
@@ -178,20 +195,6 @@ const SNSProfileScreen = ({navigation, route}) => {
               <TouchableOpacity style={styles.userBtn} onPress={() => FriendRequest()}>
                 <Text style={styles.userBtnTxt}>친구 요청</Text>
               </TouchableOpacity>
-              
-            </>
-          ) : (
-            <>
-              <TouchableOpacity
-                style={styles.userBtn}
-                onPress={() => {
-                  navigation.navigate('EditProfile');
-                }}>
-                <Text style={styles.userBtnTxt}>Edit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.userBtn} onPress={() => logout()}>
-                <Text style={styles.userBtnTxt}>Logout</Text>
-              </TouchableOpacity>
             </>
           )}
         </View>
@@ -201,7 +204,7 @@ const SNSProfileScreen = ({navigation, route}) => {
             <Text style={styles.userInfoTitle}>{posts.length}</Text>
             <Text style={styles.userInfoSubTitle}>게시물</Text>
           </View>
-          <TouchableOpacity style={styles.userInfoTitle} onPress={() => navigation.navigate('ProfileScreen', {uid: userData.uid})}>
+          <TouchableOpacity style={styles.userInfoTitle} onPress={() => navigation.navigate('SNSProfileScreen', {uid: userData.uid})}>
                 <Text style={styles.userInfoTitle}>미니홈피 방문</Text>
               </TouchableOpacity>
         </View>
@@ -258,7 +261,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   userBtnTxt: {
-    color: '#2e64e5',
+    color: '#fff',
     fontFamily : "Jalnan",
 
   },

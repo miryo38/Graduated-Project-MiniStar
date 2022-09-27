@@ -5,12 +5,15 @@ import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-community/google-signin';
 import firebase from '@react-native-firebase/app'
 import { useCardAnimation } from '@react-navigation/stack';
+import { useDispatch} from 'react-redux';
+import userSlice from '../../slices/user';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
+  const dispatch = useDispatch();
 
   const getUser = async() => {
     const currentUser = await firestore()
@@ -20,6 +23,11 @@ export const AuthProvider = ({children}) => {
     .then((documentSnapshot) => {
       if( documentSnapshot.exists ) {
         console.log('User Data', documentSnapshot.data());
+        dispatch(userSlice.actions.setUser({
+          name : documentSnapshot.data().name,
+          email : documentSnapshot.data().email,
+          uid : documentSnapshot.data().uid,
+        }))
         setUserData(documentSnapshot.data());
       }
     })
@@ -36,25 +44,6 @@ export const AuthProvider = ({children}) => {
         login: async (email, password) => {
           try {
             await auth().signInWithEmailAndPassword(email, password)
-            .then(() => {
-             
-              firestore()
-              .collection('users')
-              .doc(firebase.auth().currentUser.uid)
-              .update({
-                point :  userData.point + 10
-              })
-              Alert.alert(
-                '10 포인트가 지급 되었습니다.',
-              ).catch(error => {
-                  console.log('Something went wrong with added user to firestore: ', error);
-              })
-            })
-          
-          
-        
-           
-           
           } catch (e) {
             console.log(e);
           }
@@ -152,13 +141,16 @@ export const AuthProvider = ({children}) => {
             .then(() => {
               firestore().collection('users').doc(auth().currentUser.uid)
               .set({
+                  InterSearch : InterSearch,
                   name: name,
+                  password : password,
                   email: email,
                   phone: phone,
                   age: age,
                   uid: auth().currentUser.uid,
                   point: 1000,
-                  about: null,
+                  about: about,
+                  miniRoom : 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/miniRoomImage%2FReactNative-snapshot-image76099903516454588181655454835737.jpg?alt=media&token=a21f2503-6475-4d80-9acb-7f1aa8f8646d',
                   birthday: birthday,
                   createdAt: firestore.Timestamp.fromDate(new Date()),
                   userImg: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/AppImage%2Fprofile.jpg?alt=media&token=719929c2-defb-4cbf-99ca-fddd21bfeaa4'
@@ -183,11 +175,28 @@ export const AuthProvider = ({children}) => {
                     address: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Background%2Fbackground1.png?alt=media&token=f59b87fe-3a69-46b9-aed6-6455dd80ba45'
                   })
                   firestore().collection('miniroom').doc(auth().currentUser.uid).collection('room').doc(auth().currentUser.uid).collection('minime').doc(auth().currentUser.uid+ 'mid').set({
-                    address: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Minimi%2Fboy.png?alt=media&token=9497cbc4-b2b1-4000-9c03-fcba87f24998'
+                    address: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Animals%2FIMG_0062-removebg-preview.png?alt=media&token=1c4d1135-16f8-4575-ab69-83e55b8af684'
+                    ,getx : 177
+                    ,gety : 95
+                    ,name : '기본'
                   })
-                  firestore().collection('miniroom').doc(auth().currentUser.uid).collection('room').doc(auth().currentUser.uid).collection('minimepat').doc(auth().currentUser.uid+ 'mid').set({
+                  firestore().collection('miniroom').doc(auth().currentUser.uid).collection('room').doc(auth().currentUser.uid).collection('minipat').doc(auth().currentUser.uid+ 'mid').set({
+                    address: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/plants_growing%2F1.png?alt=media&token=0d700f0e-7b6f-430f-a8ec-dc7e9ca2601d'
+                    ,count: 1
+                  })
+                  firestore().collection('Inventory').doc(auth().currentUser.uid).collection('minipat').doc().set({
                     address: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/newAnimals%2F1.png?alt=media&token=05f16d97-3ecb-4e70-876a-5013d797529e'
-                  }).catch(error => {
+                    ,count:1
+                  })
+                  firestore().collection('SearchCount').doc(auth().currentUser.uid).set({
+                    동물 : 0,
+                    문화 : 0,
+                    물건 : 0,
+                    배경 : 0,
+                    음식 : 0,
+                    인물 : 0,
+                  })
+                  .catch(error => {
                   console.log('Something went wrong with added user to firestore: ', error);
               })
             })

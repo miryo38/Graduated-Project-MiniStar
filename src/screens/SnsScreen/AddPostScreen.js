@@ -204,8 +204,10 @@ const AddPostScreen = () => {
           onChangeText={(content) => setPost(content)}
         />
         </View>
-        <View style={{alignItems:'flex-start',width:'100%',marginLeft:40,}}>
+        <View style={{alignItems:'center',width:'100%',}}>
         <Text style={{marginTop : 20,marginBottom : 20,fontFamily : "Jalnan",}}>게시물의 주제를 선택하세요</Text>
+       
+        </View>
         <SelectDropdown
            data={tags}
            onSelect={(selectedItem, index) => {
@@ -222,7 +224,6 @@ const AddPostScreen = () => {
       return item
    }}
 />
-        </View>
         
         {uploading ? (
           <StatusWrapper>

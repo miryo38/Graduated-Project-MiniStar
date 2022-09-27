@@ -1,4 +1,4 @@
-import React, {useEffect, useState,useCallback} from 'react';
+import React, {useEffect, useState,useCallback,useRef} from 'react';
 import {
   View,
   ScrollView,
@@ -25,7 +25,7 @@ import { AuthContext } from '../../utils/AuthProvider';
 import useStore from '../../../store/store';
 import Loading from '../../utils/Loading';
 import { useNavigation } from "@react-navigation/native";
-
+import BottomSheet from 'reanimated-bottom-sheet';
 
 const SnsScreen = ({props}) => {
   const [refreshing, setRefreshing] = useState(false);
@@ -33,11 +33,24 @@ const SnsScreen = ({props}) => {
   const [loading, setLoading] = useState(true);
   const [deleted, setDeleted] = useState(false);
   const [currentUserLike, setCurrentUserLike] = useState(false)
-  const {Post,SetPost} = useStore(); // 0522새로고침용
+  const {Post,SnsDotsRef,setSnsDotsRef} = useStore(); // 0522새로고침용
   const [ready, setReady] = useState(true)
   const [Bestposts,setBestPosts] = useState(null)
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
+  const sheetRef = useRef(null);
 
+  const renderContent = () => (
+    <View
+      style={{
+        backgroundColor: 'white',
+        padding: 16,
+        height: 450,
+      }}
+    >
+      <Text>Swipe down to close</Text>
+    </View>
+  );
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -115,7 +128,7 @@ const SnsScreen = ({props}) => {
     fetchPosts();
     setDeleted(false);
     getBestPosts();
-  }, [deleted,refreshing,Post]);
+  }, [deleted,refreshing,Post,isFocused]);
 
   const handleDelete = (postId) => {
     Alert.alert(
@@ -183,10 +196,18 @@ const SnsScreen = ({props}) => {
       .catch((e) => console.log('Error deleting posst.', e));
   };
 
+
  
   return (
     ready ? <Loading/> :  (
-<ScrollView style={{flex: 1}}>
+<ScrollView style={{flex: 1}} 
+        contentContainerStyle={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }>
         <Container>
           <Text style={{fontSize : 20, marginLeft : 5, fontFamily : 'Jalnan',marginTop : 5, color : 'orange'}}>🎉인기 게시물 Top 5🎉</Text>
     <View style={{flexDirection : 'row', marginBottom : 10}}>
@@ -219,24 +240,26 @@ const SnsScreen = ({props}) => {
                 onPress={() =>
                   {
                   navigation.navigate('SNSProfile', {uid: item.uid})
-                  
                   }
                 }
               />
             )}
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-              />
-            }
           />
+          <BottomSheet
+        ref={sheetRef}
+        snapPoints={[450, 300, 0]}
+        borderRadius={10}
+        renderContent={renderContent}
+      />
         </Container>
+        
         </ScrollView>
     )
   );
 };
 
 export default SnsScreen;
+const styles = StyleSheet.create({
+});

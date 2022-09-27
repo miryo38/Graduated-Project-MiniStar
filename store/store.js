@@ -8,23 +8,43 @@ const store = (set => ({
     setBacksaddress: (input) => set({ Backaddress: input }),//상점 아이템 url주소값용
     isMinime: '', //상점 아이템 url주소값용
     setisMinime: (input) => set({ isMinime: input }),//상점 아이템 url주소값용
+
+    Minimeaddress: '', //상점 아이템 url주소값용
+    setMinimeaddress: (input) => set({ Minimeaddress: input }),//상점 아이템 url주소값용
+    Minimegetx: 1, //상점 아이템 url주소값용
+    setMinimegetx: (input) => set({ Minimegetx: input }),//상점 아이템 url주소값용
+    Minimegety: 1, //상점 아이템 url주소값용
+    setMinimegety: (input) => set({ Minimegety: input }),//상점 아이템 url주소값용
+    Minimename: '', //상점 아이템 url주소값용
+    setMinimename: (input) => set({ Minimename: input }),//상점 아이템 url주소값용
+
+    isMinipat: '', //상점 아이템 url주소값용
+    setisMinipat: (input) => set({ isMinime: input }),//상점 아이템 url주소값용
     
-    placeX: '', //미니룸 아이템 배치 좌표저장용
-    setplaceX: (input) => set({placeX:input}), //미니룸 아이템 배치 좌표저장용
+    placeX: 0, //미니룸 아이템 배치 좌표저장용
+    setplaceX: () => set(state => ({placeX:state.placeX+1})), //미니룸 아이템 배치 좌표저장용
     placeY: '', //미니룸 아이템 배치 좌표저장용
     setplaceY: (input) => set({placeY:input}), //미니룸 아이템 배치 좌표저장용
     isPoint: '', //미니룸 아이템 배치 좌표저장용
     setPoint: (input) => set({isPoint:input}), //미니룸 아이템 배치 좌표저장용
 
+    SnsDotsRef: 0,
+    setSnsDotsRef: (input) => set({SnsDotsRef:input}),
+
 
     BuyItem:'',
     setBuyItem: (input) => set({BuyItem:input}), //상점 - > 미니룸 랜더링용
+    whfmrl:'',
+    setwhfmrl: (input) => set({whfmrl:input}), //상점 - > 미니룸 랜더링용
     Itemhold:'',
     setItemhold: (input) => set({Itemhold:input}), //상점 - > 미니룸 랜더링용
 
     countItem:0,
     setcountItem: () => set(state => ({countItem:state.countItem+1})), //상점 - > 미니룸 랜더링용
 
+    isMinipatCount:0,
+    issetMinipatCount: () => set(state => ({isMinipatCount:state.isMinipatCount+1})), //상점 - > 미니룸 랜더링용
+    isClearCount:(input) => set({isMinipatCount:input}),
     DiaryPost:'',
     setDiaryPost: (input) => set({DiaryPost:input}), //상점 - > 미니룸 랜더링용
     Checkday: new Date(),

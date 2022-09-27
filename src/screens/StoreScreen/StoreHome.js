@@ -78,7 +78,7 @@ const StoreHome = ({navigation}) => {
     try {
       const data = await usersCollectionP.get();
       setMinipat(data._docs.map(doc => ({ ...doc.data(), id: doc.id })));
-      console.log('B');
+      console.log('P');
     } catch (error) {
       console.log(error.message);
     }
@@ -127,10 +127,17 @@ const StoreHome = ({navigation}) => {
               marginTop:15,
               alignItems: 'center',
             }}>
-            <Image
-              source={{uri:plant.address}}
-              style={{flex: 1, resizeMode: 'contain',aspectRatio: 1.0,}}
+              {
+              plant.type=="minipat" ? // 미니펫은 이미지가 5개가 필요해서 따로 검사
+              <Image
+              source={{uri:plant.address1}}
+              style={{flex: 1, resizeMode: 'contain',aspectRatio: 1.0,}} resizeMethod='resize'
             />
+              : <Image
+              source={{uri:plant.address}}
+              style={{flex: 1, resizeMode: 'contain',aspectRatio: 1.0,}} resizeMethod='resize'
+            />
+            }
           </View>
           <View style={{marginTop:13}}>
           <Text style={{ fontSize: 17, marginTop: 10, fontFamily: "Jalnan",}}>
@@ -169,15 +176,7 @@ const StoreHome = ({navigation}) => {
       </View>
 
      
-      <View style={{marginTop: 30, flexDirection: 'row'}}>
-        <View style={style.searchContainer}>
-          <Icon name="search" size={25} style={{marginLeft: 20}} />
-          <TextInput placeholder="아이템찾기" style={style.input} />
-        </View>
-        <View style={style.sortBtn}>
-          <Icon name="sort" size={20} color={COLORS.white} />
-        </View>
-      </View>
+  
       
       <CategoryList />
       <FlatList

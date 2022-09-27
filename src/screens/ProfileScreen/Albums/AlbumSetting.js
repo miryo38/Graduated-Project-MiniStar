@@ -1,15 +1,12 @@
 import { View, Text,TouchableOpacity,StyleSheet,FlatList,RefreshControl,Alert,} from 'react-native';
 import React, {useState, useEffect, useContext,useCallback} from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons'
-import {FAB} from 'react-native-paper'
 import BottomSheet from 'reanimated-bottom-sheet';
 import Animated from 'react-native-reanimated';
 import firestore from '@react-native-firebase/firestore';
 import firebase  from '@react-native-firebase/app';
 import ActionButton from 'react-native-action-button';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import useStore from '../../../../store/store'
 
 
 const Album = ({navigation,route}) => {

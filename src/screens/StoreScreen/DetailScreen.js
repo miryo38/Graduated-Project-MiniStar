@@ -11,7 +11,7 @@ import useStore from '../../../store/store';
 
 const DetailsScreen = ({navigation, route}) => {  
 const {user, logout} = useContext(AuthContext);
-const {isPoint,setPoint,BuyItem,setBuyItem} = useStore();
+const {isPoint,setPoint,BuyItem,setBuyItem,setwhfmrl} = useStore();
 const [userData, setUserData] = useState(null);
 
 const plant = route.params;
@@ -76,12 +76,14 @@ const updatePoint = () => {
     setPoint(userData.point-plant.price);
   }
 const addItem = async () => {
-    try {
+    if(plant.type=='tool'){
+  try {
       console.log(Item);
         await firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection(`${Item}`).add({
         name: plant.name,
         price: plant.price,
         address: plant.address,
+        size: plant.size,
       })
       updatePoint();
       console.log(`update 완료`);
@@ -89,10 +91,41 @@ const addItem = async () => {
       setBuyItem(plant.name);
       navigation.navigate('StoreHome');
      
-    } catch (error) {
+    }
+    catch (error) {
       console.log(error.message);
     }
+  }
+  if(plant.type=='minipat'){
+try {
+  await firestore()
+  .collection('Inventory')
+  .doc(firebase.auth()
+  .currentUser.uid)
+  .collection(`${Item}`)
+  .add({
+  name: plant.name,
+  price: plant.price,
+  address1: plant.address1,
+  address2: plant.address2,
+  address3: plant.address3,
+  address4: plant.address4,
+  address5: plant.address5,
+  address6: plant.address6,
+})
+updatePoint();
+console.log(`update 완료`);
+console.log(`이름 : ${plant.name} 가격: ${plant.price} 주소 : ${plant.address} `);
+setBuyItem(plant.name);
+navigation.navigate('StoreHome');
+
+}
+catch (error) {
+console.log(error.message);
+}
+}
   };
+
   const addPresentItem = async () => {
     try {
       console.log(Item);
@@ -103,7 +136,7 @@ const addItem = async () => {
        name: plant.name,
        price: plant.price,
       })
-      
+      setwhfmrl(Item);
       navigation.navigate('StoreHome');
      
     } catch (error) {
@@ -128,7 +161,7 @@ const addItem = async () => {
       </View>
       <View style={style.imageContainer}>
         
-        <Image source={{uri:plant.address}} style={{resizeMode: 'contain', flex: 1,aspectRatio:1}} />
+        <Image source={{uri:plant.address1}} style={{resizeMode: 'contain', flex: 1,aspectRatio:1}} />
       </View>
       <View style={style.detailsContainer}>
         
@@ -157,7 +190,7 @@ const addItem = async () => {
           
         </View>
         <View style={{paddingHorizontal: 20, marginTop: 10}}>
-          <View style={{height:80}}>
+          <View style={{height:150}}>
           <ScrollView>
           <Text style={{fontSize: 20,  fontFamily: "Jalnan",}}>About</Text>
           <Text
@@ -267,7 +300,7 @@ const style = StyleSheet.create({
   },
   borderBtnText: {fontWeight: 'bold', fontSize: 28, fontFamily: "Jalnan",},
   buyBtn: {
-    width: 90,
+    width: 80,
     height: 50,
     backgroundColor: 'orange',
     justifyContent: 'center',

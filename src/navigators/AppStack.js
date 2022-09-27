@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect, useRef, useState} from 'react';
 import {View, TouchableOpacity, Text} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -25,6 +25,13 @@ import PostComment from '../screens/SnsScreen/PostComment';
 import BestSnsScreen from '../screens/SnsScreen/BestSnsScreen';
 import PresentScreen from '../screens/ChatScreen/PresentScreen';
 import PresentDetailScreen from '../screens/ChatScreen/PresentDetailScreen'
+import Changepwd from '../screens/SettingScreen/Changepwd'
+import Icon from "react-native-vector-icons/FontAwesome";
+import { useDispatch, useSelector } from 'react-redux';
+import counterSlice, { up } from '../../slices/counter';
+import userSlice from '../../slices/user';
+
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const FeedStack = ({navigation}) => (
@@ -66,7 +73,7 @@ const FeedStack = ({navigation}) => (
 
         headerTitleStyle: {
          fontFamily: 'Jalnan',
-
+         color : 'orange'
         },
         headerStyle: {
           shadowColor: '#fff',
@@ -151,7 +158,7 @@ const FeedStack = ({navigation}) => (
        }}
        />
       <Stack.Screen
-        name="ProfileScreen"
+        name="SNSProfileScreen"
         component={ProfileScreen}
         options={{
         headerShown: false,
@@ -286,6 +293,72 @@ const SearchStack = ({navigation}) => (
 
         headerTitleStyle: {
          fontFamily: 'Jalnan',
+         color: 'orange'
+
+        },
+        headerStyle: {
+          shadowColor: '#fff',
+          elevation: 0,
+          backgroundColor : '#fff'
+        },
+        headerBackTitleVisible: false,
+        headerBackImage: () => (
+          <View style={{marginLeft: 15}}>
+            <Ionicons name="arrow-back" size={25} color="black" />
+          </View>
+        ),
+      }}
+    />   
+
+  </Stack.Navigator>
+);
+
+
+const SettingStack = ({navigation}) => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="SettingScreen"
+      component={SettingScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="Changepwd"
+      component={Changepwd}
+      options={{
+        title: '비밀번호 변경',
+        headerTitleAlign: 'center',
+        headerTitleStyle: {
+          fontFamily: 'Jalnan',
+          color : '#696969'
+
+         },
+        headerStyle: {
+        backgroundColor: '#fff',
+        shadowColor: '#fff',
+        elevation: 0,
+                      
+            
+        },
+         headerBackTitleVisible: false,
+         headerBackImage: () => (
+         <View style={{marginLeft: 15}}>
+         <Ionicons name="arrow-back" size={25} color="#545454" />
+         </View>
+         ),
+         }}
+         />
+         <Stack.Screen
+      name="SerachBestSnsScreen"
+      component={BestSnsScreen}
+      options={{
+        title: 'Top 5 게시물 !',
+        headerTitleAlign: 'center',
+
+        headerTitleStyle: {
+         fontFamily: 'Jalnan',
+         color:'orange'
 
         },
         headerStyle: {
@@ -306,7 +379,49 @@ const SearchStack = ({navigation}) => (
   
   
 );
+
+
 const AppStack = () => {
+  const [min, setMin] = useState(6);
+  const [sec, setSec] = useState(0);
+  const time = useRef(360);
+  const timerId = useRef(null);
+  const dispatch = useDispatch();
+  const count = useSelector(state => {return state.count.value});
+  
+  useEffect(()=>{
+  timerId.current = setInterval(() => { // 로그인시 미니펫용 카운터
+    setMin(parseInt(time.current / 60));
+    setSec(time.current % 60);
+    time.current -=1;
+    
+    console.log(time.current);
+  }, 3022220);
+
+  return () => clearInterval(timerId.current);
+  },[]);
+
+  useEffect(()=>{
+    const promise = new Promise((resolve, reject) => {
+      if(time.current %60===0) {
+        resolve(1);
+      } else if(time.current <=0){
+        reject('타이머 종료');
+      }
+      });
+    promise.then((item) => {
+      dispatch(counterSlice.actions.up(item)); //로그인후 앱스택 접속시 시작, 미니룸 펫 키우기용
+      console.log(`먹이 꺼-억${item} - 먹은갯수:${count}`);
+    })
+    .catch((error) => {
+      console.log(error);
+      clearInterval(timerId.current);
+    });
+  },[sec]);
+  // dispatch(counterSlice.actions.up(1)); //로그인후 앱스택 접속시 시작, 미니룸 펫 키우기용
+  // console.log(count);
+  // console.log('타임아웃');
+  // clearInterval(timerId.current);
   const getTabBarVisibility = (route) => {
     const routeName = route.state
       ? route.state.routes[route.state.index].name
@@ -321,7 +436,7 @@ const AppStack = () => {
   return (
     <Tab.Navigator screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#2e64e5',
+        tabBarActiveTintColor: 'orange',
         tabBarHideOnKeyboard: true,
         
         
@@ -334,7 +449,7 @@ const AppStack = () => {
           
           // tabBarLabel: 'Home',
           tabBarIcon: ({color, size}) => (
-            <Ionicons name="person-outline" color={color} size={size} />
+            <Ionicons name="person" color={color} size={size} />
           ),
         }}
       />
@@ -345,7 +460,7 @@ const AppStack = () => {
       options={{
         
         tabBarIcon: ({color,size}) => (
-          <Feather name="search" size={size} color={color} />
+          <Icon name="search" size={size} color={color} />
         ),
       }}
     />
@@ -356,8 +471,7 @@ const AppStack = () => {
           tabBarLabel: 'SNS',
           // tabBarVisible: route.state && route.state.index === 0,
           tabBarIcon: ({color, size}) => (
-            <MaterialCommunityIcons
-              name="home-outline"
+            <Icon name="home"
               color={color}
               size={size}
             />
@@ -379,10 +493,7 @@ const AppStack = () => {
           // tabBarVisible: route.state && route.state.index === 0,
           // tabBarLabel: 'Home',
           tabBarIcon: ({color, size}) => (
-            <Ionicons
-              name="chatbox-ellipses-outline"
-              color={color}
-              size={size}
+            <Ionicons name="chatbubble-outline" color={color}size={size}
             />
           ),
         })}
@@ -393,18 +504,17 @@ const AppStack = () => {
       options={{
         
         tabBarIcon: ({size,color}) => (
-          <AntDesign name="hearto" size={size} color={color} />
+          <Icon name="shopping-bag" size={size} color={color} />
         ),
       }}
     />
          <Tab.Screen
       name="SETTING"
-      component={SettingScreen}
+      component={SettingStack}
       options={{
         
         tabBarIcon: ({size,color}) => (
-          <MaterialCommunityIcons
-            name="server"
+          <Ionicons name="settings"
             size={size}
             color={color}
           />

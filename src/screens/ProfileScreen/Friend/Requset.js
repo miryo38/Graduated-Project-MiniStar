@@ -133,9 +133,9 @@ const Request = () => {
           </View>
           
           <View style={{flexDirection:'row',flex: 1, justifyContent: "space-between", alignItems: "center"}}>
-          <Text style={{flex: 1,fontFamily : "Jalnan"}}>{item.name}</Text>
-          <Text style={{fontFamily : "Jalnan"}}>{item.sname}</Text>
-          <Text style={{flex: 1,fontFamily : "Jalnan",marginLeft : 20}}>{item.birthday}</Text>
+          <Text style={{fontFamily : "Jalnan",marginLeft : 10}}>{item.name}</Text>
+          <Text style={{fontFamily : "Jalnan",marginLeft : 30}}>{item.sname}</Text>
+          <Text style={{fontFamily : "Jalnan",marginLeft : 20}}>{item.birthday}</Text>
           <TouchableOpacity style={styles.button} onPress={() => FriendRequestCheck(item)}>
               <Text style={styles.userBtnTxt}>확인</Text>
           </TouchableOpacity>
@@ -214,6 +214,7 @@ const styles = StyleSheet.create({
       fontSize:15,
     },
     button: {
+      marginRight:10,
       width: 50,
       height: 30,
       backgroundColor: "orange",

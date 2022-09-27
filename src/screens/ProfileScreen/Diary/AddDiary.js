@@ -2,9 +2,8 @@ import { View,  ActivityIndicator, Text,TouchableOpacity,StyleSheet,SafeAreaView
 import React, { useState,useEffect,useContext,useCallback } from 'react';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {format} from 'date-fns';
-import { InputFieldDiary, InputTitle, InputWrapper,Boundary, SubmitBtn, AddImageD,
-  InputField,SubmitBtnText, DiaryBtn, DiaryBtnText, DiaryBtnWapper, AddImage,StatusWrapper, } from '../../../../styles/AddPost';
-import DatePicker from '../../../components/DatePicker/DatePicker';
+import {  InputWrapper,Boundary, SubmitBtn, AddImageD,
+  InputField,StatusWrapper, } from '../../../../styles/AddPost';
 import ImagePicker from 'react-native-image-crop-picker';
 import { AuthContext } from '../../../utils/AuthProvider';
 import firestore from '@react-native-firebase/firestore';
@@ -15,11 +14,7 @@ import firebase  from '@react-native-firebase/app';
 import storage from '@react-native-firebase/storage';
 import useStore from '../../../../store/store'
 import { ScrollView } from 'react-native-gesture-handler';
-import {
-  actions,
-  RichEditor,
-  RichToolbar,
-} from "react-native-pell-rich-editor";
+
 
 const AddDiary = () =>{
 

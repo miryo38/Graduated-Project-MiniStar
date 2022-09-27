@@ -51,8 +51,8 @@ export const AddImageD = styled.Image`
     margin-left: 15px;
 `;
 export const AddImage = styled.Image`
-    width: 30%;
-    height: 100px;
+    width: 70%;
+    height: 150px;
     margin-bottom: 15px;
 `;
 

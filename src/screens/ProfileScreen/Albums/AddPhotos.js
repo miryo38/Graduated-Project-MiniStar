@@ -6,8 +6,6 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
-  ScrollView,
-  RefreshControl
 } from 'react-native';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -28,7 +26,6 @@ import {
 } from '../../../../styles/AddPost';
 
 import { AuthContext } from '../../../utils/AuthProvider';
-import { configureStore } from '@reduxjs/toolkit';
 
 const AddPhotos = ({route}) => {
   const [userData, setUserData] = useState(null);
@@ -136,9 +133,10 @@ const AddPhotos = ({route}) => {
               point :  userData.point + 10
             })
         })
+        navigation.goBack();
       console.log('Post Added!');
       Alert.alert(
-        '게시물 업데이트 완료!',
+        '사진 업데이트 완료!',
       );
       setPhotoName(imageUrl);
       SetBody(body);
@@ -146,7 +144,7 @@ const AddPhotos = ({route}) => {
       setDeleted(true);
       setPost(null);
       
-      navigation.goBack();
+      
     })
     .catch((error) => {
       console.log('Something went wrong with added post to firestore.', error);

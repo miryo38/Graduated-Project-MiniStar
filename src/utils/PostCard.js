@@ -1,7 +1,8 @@
-import React, {useContext, useEffect, useState,useCallback} from 'react';
+import React, {useContext, useEffect, useState,useCallback,useRef} from 'react';
 import colors from '../res/colors';
 import images from '../res/images';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Entypo';
 import {
   Container,
   Card,
@@ -29,6 +30,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import firestore from '@react-native-firebase/firestore';
 import { useNavigation } from "@react-navigation/native";
 import firebase  from '@react-native-firebase/app';
+import useStore from '../../store/store';
 
 const PostCard = ({item, onPress,onDelete,}) => {
   const {user, logout} = useContext(AuthContext);
@@ -39,6 +41,7 @@ const PostCard = ({item, onPress,onDelete,}) => {
   const navigation = useNavigation();
   const [deleted, setDeleted] = useState(false);
   const [CommentData, setCommentData] = useState([]);
+  const {SnsDotsRef,setSnsDotsRef} = useStore();
 
   const [refreshing, setRefreshing] = useState(false);
   const wait = (timeout) => {
@@ -49,7 +52,7 @@ const PostCard = ({item, onPress,onDelete,}) => {
     wait(2000).then(() => setRefreshing(false));
   }, []);
   
-
+  
   const onLikePress = (item) => {
     firestore()
     .collection('posts')
@@ -156,6 +159,7 @@ const getComment = async(item) => {
   }, [deleted,refreshing]);
 
   return (
+    <>
     <Card key={item.id} refreshControl={
       <RefreshControl
          refreshing={refreshing}
@@ -178,7 +182,17 @@ const getComment = async(item) => {
           
           </TouchableOpacity>
         </View>
+        
       </View>
+      <View style={Styles.dotsButton}>
+        <TouchableOpacity
+                onPress={() => {
+                  setSnsDotsRef(item.postid);
+                  console.log(SnsDotsRef);  
+                  }}>
+                <Icon name="dots-three-horizontal" size={15} color="#545454" />
+        </TouchableOpacity>
+        </View>
      
     </View>
           
@@ -203,18 +217,19 @@ const getComment = async(item) => {
       />
       
       })()} 
-      
-       
-             
-         
-              
-            
-        
             <View style={{marginLeft: 5}}>
         <TouchableOpacity onPress={() => navigation.navigate('PostComment',{uid : item.uid, postid: item.postid, name : item.post} )}>  
           <Ionicons name="chatbubble-ellipses" size={23} color={'#545454'}  />
         </TouchableOpacity>
+        
         </View>
+        <View style={{marginLeft: 5}}>
+        <TouchableOpacity onPress={() => navigation.navigate('ReportScreeninfo',{uid : item.uid, postid: item.postid, name : item.post, img : item.postImg} )}>  
+          <Ionicons name="megaphone" size={23} color={'#545454'}  />
+        </TouchableOpacity>
+        
+        </View>
+        
         <View style={{marginLeft: 5}}>
         <TouchableOpacity onPress={() => onDelete(item.id)}>
         {user.uid == item.uid ? (
@@ -251,9 +266,9 @@ const getComment = async(item) => {
         }}>
        {moment(item.postTime.toDate()).lang("ko").fromNow()}
       </Text>
-
- 
     </Card>
+    
+    </>
   );
 };
 
@@ -270,6 +285,7 @@ container: {
   alignItems: 'center',
 },
 nameContainer: {
+  width:'100%',
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'flex-start',
@@ -326,5 +342,10 @@ likes: {
   marginLeft:10,
   fontSize: 14,
   fontWeight: 'bold',
+},
+dotsButton: {
+  marginLeft:-30,
+  flexDirection:'row',
+  alignItems:'flex-end'
 },
 });
