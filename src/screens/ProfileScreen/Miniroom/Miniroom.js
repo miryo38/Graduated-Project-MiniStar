@@ -1,4 +1,10 @@
-import React, {useState, useEffect, useRef,useLayoutEffect} from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useLayoutEffect,
+  useCallback,
+} from 'react';
 import {
   View,
   Text,
@@ -8,6 +14,7 @@ import {
   Button,
   ImageBackground,
   Alert,
+  Pressable,
 } from 'react-native';
 import ToolInven from './ToolInven';
 import MinimiInven from './MinimiInven';
@@ -26,7 +33,7 @@ import ViewShot from 'react-native-view-shot';
 import storage from '@react-native-firebase/storage';
 import Toast from 'react-native-toast-message';
 import HeaderLeftGoBack from '../../../components/HeaderLeftGoBack';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Config from 'react-native-config';
 const initial =
   'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Background%2Fbackground1.png?alt=media&token=f59b87fe-3a69-46b9-aed6-6455dd80ba45';
@@ -34,8 +41,12 @@ const Tab = createMaterialTopTabNavigator();
 
 const Miniroom = () => {
   const dispatch = useDispatch();
-  const count = useSelector(state => {return state.count.value});
-  const useruid = useSelector(state => {return state.user.uid});
+  const count = useSelector(state => {
+    return state.count.value;
+  });
+  const useruid = useSelector(state => {
+    return state.user.uid;
+  });
   const navigation = useNavigation();
   const captureRef = useRef();
 
@@ -52,8 +63,7 @@ const Miniroom = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerLeft: () => 
-      HeaderLeftGoBack(navigation)
+      headerLeft: () => HeaderLeftGoBack(navigation),
     });
   }, [navigation]);
 
@@ -72,13 +82,12 @@ const Miniroom = () => {
     .doc(firebase.auth().currentUser.uid)
     .collection('minipat')
     .doc(firebase.auth().currentUser.uid + 'mid');
-  
+
   useEffect(() => {
     getBackgroundData();
     getMinipat();
     getUser();
-    console.log(Config);
-  }, [countItem, Minimeaddress, Backaddress,Minipat]);
+  }, [countItem, Minimeaddress, Backaddress, Minipat]);
 
   const getUser = async () => {
     await firestore()
@@ -148,9 +157,7 @@ const Miniroom = () => {
     const imageuri = await uploadImage();
     showToast();
   };
-  
-  
-  
+
   const getBackgroundData = async () => {
     try {
       const data = await usersBackgroundCollection.get();
@@ -169,14 +176,14 @@ const Miniroom = () => {
     }
   };
 
-  const showToast =() => {
+  const showToast = () => {
     Toast.show({
       type: 'success',
       text1: '저장완료!',
       text2: `정상적으로 저장했습니다!👋`,
     });
   };
-  
+
   return (
     <View
       style={{
@@ -185,6 +192,17 @@ const Miniroom = () => {
         height: '100%',
         backgroundColor: 'white',
       }}>
+      <Pressable
+        style={{
+          width: '100%',
+          alignItems: 'center',
+          backgroundColor: '#3b5998',
+        }}
+        onPress={() => {
+          onSave();
+        }}>
+        <Text style={{fontFamily: 'Jalnan', color: 'white'}}>저장버튼</Text>
+      </Pressable>
       <View style={{height: 200}}>
         <ViewShot
           style={{flex: 1}}
@@ -196,7 +214,7 @@ const Miniroom = () => {
               source={{uri: `${Back ? Back : initial}`}}
               resizeMethod="resize"></ImageBackground>
           </View>
-        
+
           <View style={styles.item}>
             <MiniroomBox></MiniroomBox>
             <MinimeBox></MinimeBox>
@@ -204,7 +222,7 @@ const Miniroom = () => {
           </View>
         </ViewShot>
       </View>
-      
+
       <View style={styles.miniroom}>
         <Tab.Navigator
           tabBarOptions={{

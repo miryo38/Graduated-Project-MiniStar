@@ -27,6 +27,8 @@ export const AuthProvider = ({children}) => {
           name : documentSnapshot.data().name,
           email : documentSnapshot.data().email,
           uid : documentSnapshot.data().uid,
+          InterSearch : documentSnapshot.data().InterSearch,
+          Lsearch : documentSnapshot.data().Lsearch,
         }))
         setUserData(documentSnapshot.data());
       }
@@ -134,14 +136,15 @@ export const AuthProvider = ({children}) => {
           }
         },*/
         
-        register: async (email, password,phone,name,age,birthday,about,uid) => { 
+        register: async (email, password,phone,name,age,birthday,about,uid,) => { 
           const currentMiniroomId = Math.floor(100000 + Math.random() * 9000).toString();
           try {
             await auth().createUserWithEmailAndPassword(email, password)
             .then(() => {
               firestore().collection('users').doc(auth().currentUser.uid)
               .set({
-                  InterSearch : InterSearch,
+                  Lsearch : '동물',
+                  InterSearch : '동물',
                   name: name,
                   password : password,
                   email: email,
@@ -149,7 +152,7 @@ export const AuthProvider = ({children}) => {
                   age: age,
                   uid: auth().currentUser.uid,
                   point: 1000,
-                  about: about,
+                  about: null,
                   miniRoom : 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/miniRoomImage%2FReactNative-snapshot-image76099903516454588181655454835737.jpg?alt=media&token=a21f2503-6475-4d80-9acb-7f1aa8f8646d',
                   birthday: birthday,
                   createdAt: firestore.Timestamp.fromDate(new Date()),

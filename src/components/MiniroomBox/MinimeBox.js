@@ -10,8 +10,6 @@ const MinimeBox =({}) => {
   const addminiroom = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('minime');
   const {setMinimeaddress,setMinimegetx,setMinimegety,setMinimename} = useStore();
   const {Minimegetx,Minimegety,Minimeaddress,Minimename,countItem} = useStore();
-
-  const [Minime] = useState();
   const getMinime = async () => {
     try {
       const data = await usersMinimeCollection.get();

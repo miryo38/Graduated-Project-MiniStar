@@ -19,7 +19,8 @@ import useStore from '../../../../store/store';
 
 const CheckItem = ({navigation, route}) => {
   const {user, logout} = useContext(AuthContext);
-  const {settooladdress, BuyItem, countItem, setcountItem, setwhfmrl} =useStore();
+  const {settooladdress, BuyItem, countItem, setcountItem, setwhfmrl} =
+    useStore();
   const [userData, setUserData] = useState(null);
 
   const plant = route.params;
@@ -60,11 +61,17 @@ const CheckItem = ({navigation, route}) => {
         {
           text: '네',
           onPress: () =>
-            pushTool(
-              plant.tool[plant.idx].address,
-              plant.tool[plant.idx].name,
-              plant.tool[plant.idx].size,
-            ),
+            plant.type === 'tool'
+              ? pushTool(
+                  plant.tool[plant.idx].address,
+                  plant.tool[plant.idx].name,
+                  plant.tool[plant.idx].size,
+                )
+              : pushMinime(
+                  plant.tool[plant.idx].address,
+                  plant.tool[plant.idx].name,
+                  plant.tool[plant.idx].size,
+                ),
         },
       ],
       {cancelable: false},
@@ -96,6 +103,27 @@ const CheckItem = ({navigation, route}) => {
       ],
     });
   };
+
+  const pushMinime = (newaddress, newname, size) => {
+    firestore()
+      .collection('miniroom')
+      .doc(firebase.auth().currentUser.uid)
+      .collection('room')
+      .doc(firebase.auth().currentUser.uid)
+      .collection('minime')
+      .doc(firebase.auth().currentUser.uid + 'mid')
+      .update({address: newaddress, name: newname, size: size});
+    settooladdress(newaddress);
+    setcountItem();
+    navigation.reset({
+      routes: [
+        {
+          name: 'Miniroom',
+        },
+      ],
+    });
+  };
+
   return (
     <SafeAreaView
       style={{

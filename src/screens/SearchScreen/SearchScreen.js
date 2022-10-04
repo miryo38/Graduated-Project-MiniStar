@@ -151,11 +151,11 @@ const getBestPosts = async ()=>{
  //  console.log(allusers)
  setBestPosts(allposts)
 }
-const AllBestPosts =  async () => {
+const AllBestPosts =  async (tags) => {
   try {
     const list = [];
     
-    await firestore().collection('posts').where('tag', '==' , userData ? userData.InterSearch : '동물').orderBy('postTime', 'desc').get()
+    await firestore().collection('posts').where('tag', '==' , tags).orderBy('postTime', 'desc').get()
       .then((querySnapshot) => {
         // console.log('Total Posts: ', querySnapshot.size);
         querySnapshot.forEach((doc) => {
@@ -510,11 +510,11 @@ useEffect(()=>{
           <TouchableOpacity style={styles.button2} onPress={() => ALlPosts()}>
               <Text style={styles.userBtnTxt2}>전체 게시물</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button2} onPress={() => TagList(userData ? userData.Lsearch : '')}>
+          <TouchableOpacity style={styles.button2} onPress={() => TagList(userData ? userData.Lsearch : '동물')}>
               <Text style={styles.userBtnTxt2}>최근 검색어</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button2} onPress={() => AllBestPosts()}>
+          <TouchableOpacity style={styles.button2} onPress={() => AllBestPosts(userData ? userData.InterSearch : '동물')}>
               <Text style={styles.userBtnTxt2}>관심 게시물</Text>
           </TouchableOpacity>
 

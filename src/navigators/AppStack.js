@@ -30,7 +30,10 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { useDispatch, useSelector } from 'react-redux';
 import counterSlice, { up } from '../../slices/counter';
 import userSlice from '../../slices/user';
-
+import { FirebaseStorageTypes } from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
+import firebase from '@react-native-firebase/app';
+import Toast from 'react-native-toast-message';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -388,7 +391,13 @@ const AppStack = () => {
   const timerId = useRef(null);
   const dispatch = useDispatch();
   const count = useSelector(state => {return state.count.value});
-  
+  const showToast = name => {
+    Toast.show({
+      type: 'success',
+      text1: '포인트 획득완료!',
+      text2: `정상적으로 업데이트 했습니다!👋`,
+    });
+  };
   useEffect(()=>{
   timerId.current = setInterval(() => { // 로그인시 미니펫용 카운터
     setMin(parseInt(time.current / 60));
@@ -396,7 +405,7 @@ const AppStack = () => {
     time.current -=1;
     
     console.log(time.current);
-  }, 3022220);
+  }, 10);
 
   return () => clearInterval(timerId.current);
   },[]);
@@ -405,7 +414,7 @@ const AppStack = () => {
     const promise = new Promise((resolve, reject) => {
       if(time.current %60===0) {
         resolve(1);
-      } else if(time.current <=0){
+      } else if(time.current <=1){
         reject('타이머 종료');
       }
       });
@@ -414,14 +423,26 @@ const AppStack = () => {
       console.log(`먹이 꺼-억${item} - 먹은갯수:${count}`);
     })
     .catch((error) => {
-      console.log(error);
+      dispatch(counterSlice.actions.down(1));
       clearInterval(timerId.current);
+  
+        firestore()
+        .collection('users')
+        .doc(firebase.auth().currentUser.uid)
+        .get()
+        .then(documentSnapshot => {
+          if (documentSnapshot.exists) {
+            firestore()
+            .collection('users')
+            .doc(firebase.auth().currentUser.uid)
+            .update({
+              point: documentSnapshot.data().point + 300,
+        });
+          }
+        });
+        showToast();
     });
   },[sec]);
-  // dispatch(counterSlice.actions.up(1)); //로그인후 앱스택 접속시 시작, 미니룸 펫 키우기용
-  // console.log(count);
-  // console.log('타임아웃');
-  // clearInterval(timerId.current);
   const getTabBarVisibility = (route) => {
     const routeName = route.state
       ? route.state.routes[route.state.index].name

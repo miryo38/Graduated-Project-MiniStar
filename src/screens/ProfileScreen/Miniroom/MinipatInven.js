@@ -24,13 +24,13 @@ const MinipatInven = () => {
     .collection('minipat')
     .doc(firebase.auth().currentUser.uid+ 'mid')
     .update({
-      address1:newaddress1,
-      address2:newaddress2,
-      address3:newaddress3,
-      address4:newaddress4,
-      address5:newaddress5,
-      address6:newaddress6,
-      count:0});
+      1:newaddress1,
+      2:newaddress2,
+      3:newaddress3,
+      4:newaddress4,
+      5:newaddress5,
+      6:newaddress6,
+      });
     setcountItem();
     //setisMinipat(newaddress1);
   };
