@@ -101,7 +101,7 @@ const AddPostScreen = () => {
     .collection('posts')
     .doc(currentPhotoId)
     .set({
-  
+      name : userData.name,
       uid: user.uid,
       post: post,
       tag: tag,

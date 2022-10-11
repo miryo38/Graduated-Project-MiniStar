@@ -1,8 +1,11 @@
 import { View, Text,TouchableOpacity,StyleSheet,FlatList,Image,Alert,RefreshControl,TextInput} from 'react-native';
-import React, {useState, useEffect, useContext,useCallback} from 'react';
+import React, {useState, useEffect, useContext,useCallback,useStore} from 'react';
 import { AuthContext } from '../../../utils/AuthProvider';
 import firestore from '@react-native-firebase/firestore';
 import firebase  from '@react-native-firebase/app';
+import { theme } from '../../../Chat/ChatTheme';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const UserScreen = ({navigation,route}) => {
   const [refreshing, setRefreshing] = useState(false);
@@ -10,6 +13,7 @@ const UserScreen = ({navigation,route}) => {
   const {user, logout} = useContext(AuthContext);
   const [friendData, setFriendData] = useState(null);
   const [userData, setUserdData] = useState(null);
+  const [Username, setUsername]  = useState(null);
 
   const [deleted, setDeleted] = useState(false);
 
@@ -21,19 +25,52 @@ const UserScreen = ({navigation,route}) => {
     setRefreshing(true);
     wait(2000).then(() => setRefreshing(false));
   }, []);
-  const getFriend = async() => {
-    const querySanp = await firestore()
-    .collection('friends')
-    .doc(firebase.auth().currentUser.uid)
-    .collection('friendsinfo')
-    .get()
-
-    const allfriends = querySanp.docs.map(docSnap=>docSnap.data())
-    setFriendData(allfriends)
-      
+  
+  const handleSearchTextChange =  async () => {
+  
+    try {
+      const list = [];
+  
+      await firestore()
+        .collection('users')
+        .where('name', '>=' , Username)
+        .get()
+        .then((querySnapshot) => {
+          // console.log('Total Posts: ', querySnapshot.size);
+  
+          querySnapshot.forEach((doc) => {
+            const {
+              userImg,
+              name,
+              uid,
+              about,
+              email,
+              point
+            
+            
+            } = doc.data();
+            list.push({
+              name,
+              uid,
+              about,
+              userImg,
+              email,
+              point
+            });
+          });
+     
+        })
+        setUserdData(list);
+        console.log('qkqhj' , Username)
     
-  }
-
+      if (loading) {
+        setLoading(false);
+      }
+    
+    } catch (e) {
+    }
+    
+  };
   const getUsers = async () => {
     try {
       const list = [];
@@ -72,11 +109,124 @@ const UserScreen = ({navigation,route}) => {
       console.log(e);
     }
   };
+  const getUsersName = async () => {
+    try {
+      const list = [];
+
+      
+     const querySanp = await firestore().collection('users').orderBy('name').get()
+        .then((querySnapshot) => {
+          // console.log('Total Posts: ', querySnapshot.size);
+
+          querySnapshot.forEach((doc) => {
+            const {
+              userImg,
+              name,
+              uid,
+              about,
+              email,
+              point
+            
+            
+            } = doc.data();
+            list.push({
+              name,
+              uid,
+              about,
+              userImg,
+              email,
+              point
+            });
+          });
+        });
+        setUserdData(list)
+     
+     
+    
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const getUsersId = async () => {
+    try {
+      const list = [];
+
+      
+     const querySanp = await firestore().collection('users').orderBy('email').get()
+        .then((querySnapshot) => {
+          // console.log('Total Posts: ', querySnapshot.size);
+
+          querySnapshot.forEach((doc) => {
+            const {
+              userImg,
+              name,
+              uid,
+              about,
+              email,
+              point
+            
+            
+            } = doc.data();
+            list.push({
+              name,
+              uid,
+              about,
+              userImg,
+              email,
+              point
+            });
+          });
+        });
+        setUserdData(list)
+     
+     
+    
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const getUsersPoint = async () => {
+    try {
+      const list = [];
+
+      
+     const querySanp = await firestore().collection('users').orderBy('point' , 'desc').get()
+        .then((querySnapshot) => {
+          // console.log('Total Posts: ', querySnapshot.size);
+
+          querySnapshot.forEach((doc) => {
+            const {
+              userImg,
+              name,
+              uid,
+              about,
+              email,
+              point
+            
+            
+            } = doc.data();
+            list.push({
+              name,
+              uid,
+              about,
+              userImg,
+              email,
+              point
+            });
+          });
+        });
+        setUserdData(list)
+     
+     
+    
+    } catch (e) {
+      console.log(e);
+    }
+  };
   
 
   
   useEffect(() => {
-    getFriend();
     getUsers();
     setDeleted(false);
   }, [deleted,refreshing]);
@@ -109,16 +259,44 @@ const UserScreen = ({navigation,route}) => {
     return (
     <View style={styles.container}>
         <Text style={{fontSize:20, paddingBottom: 10, fontFamily : "Jalnan"}}>회원 목록</Text>
+        <View style={styles.serach}>
+    <TouchableOpacity style={{marginTop : 6,marginLeft : 5}} onPress={() => getUsers()}>
+         
+         <Ionicons name="arrow-back" size={25} color="black" />
+
+        </TouchableOpacity>
+        <View style={styles.container2}>
+			<View style={styles.row}>
+				<Icon name="search" size={20} color={theme.colors.searchIcon} />
+				<TextInput style={styles.input}
+         onChangeText={(text) => {setUsername(text)}}
+         placeholder=" 회원 이름 검색"
+          maxLength={10} />
+			</View>
+		</View>
+    <TouchableOpacity onPress={handleSearchTextChange}>
+    <View style={styles.serachBtn}>
+    <Text style={{color : '#696969' , fontFamily : 'Jalnan'}}>검색</Text>
+
+    </View>
+    </TouchableOpacity>
+    </View>
         <View style={styles.title}>
         <View style={{width:40}}></View>
-        
-          <Text style={{flex:1,textAlign: 'center',fontFamily : "Jalnan"}}>이름</Text>
-          <Text style={{flex:1,textAlign: 'center',fontFamily : "Jalnan"}}>아이디</Text>
-          <Text style={{flex:1,textAlign: 'center',fontFamily : "Jalnan"}}>보유 포인트</Text>  
-          
+        <TouchableOpacity style={{flex:1,textAlign: 'center'}} onPress={() => getUsersName()}>
+          <Text style={{fontFamily : "Jalnan"}}>이름</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{flex:1,textAlign: 'center'}} onPress={() => getUsersId()}>
+          <Text style={{fontFamily : "Jalnan"}}>아이디</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{flex:1,textAlign: 'center'}} onPress={() => getUsersPoint()}>
+          <Text style={{fontFamily : "Jalnan"}}>보유 포인트</Text>  
+          </TouchableOpacity>
           <View style={{width:40}}></View>
           
         </View>
+
+        
         <FlatList 
           data={userData}
           renderItem={({item})=> {return <RenderCard item={item} />
@@ -151,6 +329,10 @@ const styles = StyleSheet.create({
       padding: 10,
       alignItems: 'center',
     },
+
+    container2: {
+      
+  },
     title:{
       flexDirection: 'row', // 혹은 'column'
       marginBottom:10,
@@ -209,5 +391,40 @@ const styles = StyleSheet.create({
       color: '#fff',
       textAlign:'center',  
       fontSize:15,
+    },
+    serach: {
+      flexDirection : 'row',
+      marginTop: 10,
+      marginBottom: 10,
+    },
+  
+  row: {
+      backgroundColor: theme.colors.searchBackground,
+      flexDirection: 'row',
+      borderRadius: 5,
+      height: 35,
+      alignItems: 'center',
+      paddingHorizontal: 10,
+      marginLeft : 10
+    },
+    input: {
+      fontSize: 15,
+      height: 45,
+      width : 230,
+     
+      color: theme.colors.searchText
+    },
+    serach: {
+      flexDirection : 'row',
+      marginTop: 10,
+      marginBottom: 10,
+    },serachBtn: {
+      marginLeft : 10,
+      width: 50,
+      height: 35,
+      backgroundColor: theme.colors.searchBackground,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 10,
     },
   });

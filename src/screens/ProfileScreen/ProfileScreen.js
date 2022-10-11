@@ -320,7 +320,7 @@ const AddStorePressed = () => {
       
     <View style={{flex: 1, backgroundColor: '#fff'}}>
         {(() => { 
-    if (userData ? userData.email === 'admin@gmail.com' : '' ) // 관리자 구분    
+    if (true) // 관리자 구분    
     return  <View style={{flex: 1, backgroundColor: '#fff'}}>
     <View style={styles.title}>
   

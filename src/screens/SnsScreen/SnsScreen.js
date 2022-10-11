@@ -9,10 +9,11 @@ import {
   Alert,
   RefreshControl,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  TextInput
 } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useIsFocused } from '@react-navigation/native';
 import PostCard from '../../utils/PostCard';
@@ -26,6 +27,7 @@ import useStore from '../../../store/store';
 import Loading from '../../utils/Loading';
 import { useNavigation } from "@react-navigation/native";
 import BottomSheet from 'reanimated-bottom-sheet';
+import { theme } from '../../Chat/ChatTheme';
 
 const SnsScreen = ({props}) => {
   const [refreshing, setRefreshing] = useState(false);
@@ -39,6 +41,7 @@ const SnsScreen = ({props}) => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const sheetRef = useRef(null);
+  const [Username, setUsername]  = useState(null);
 
   const renderContent = () => (
     <View
@@ -85,6 +88,7 @@ const SnsScreen = ({props}) => {
 
           querySnapshot.forEach((doc) => {
             const {
+              name,
               post,
               uid,
               postImg,
@@ -94,6 +98,57 @@ const SnsScreen = ({props}) => {
               postid,
             } = doc.data();
             list.push({
+              name,
+              id: doc.id,
+              uid,
+              postTime: postTime,
+              postImg,
+              post,
+              liked: false,
+              likes,
+              postid,
+              comments,
+            });
+          });
+        });
+
+      setPosts(list);
+      
+      if (loading) {
+        setLoading(false);
+      }
+
+    
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const SearchName = async () => {
+    try {
+      const list = [];
+
+      
+      await firestore()
+        
+      .collection("posts")
+      .where("name", "==", Username)
+      .get()
+        .then((querySnapshot) => {
+          // console.log('Total Posts: ', querySnapshot.size);
+
+          querySnapshot.forEach((doc) => {
+            const {
+              name,
+              post,
+              uid,
+              postImg,
+              postTime,
+              likes,  
+              comments,
+              postid,
+            } = doc.data();
+            list.push({
+              name,
               id: doc.id,
               uid,
               postTime: postTime,
@@ -200,6 +255,7 @@ const SnsScreen = ({props}) => {
  
   return (
     ready ? <Loading/> :  (
+      
 <ScrollView style={{flex: 1}} 
         contentContainerStyle={styles.scrollView}
         refreshControl={
@@ -211,6 +267,7 @@ const SnsScreen = ({props}) => {
         <Container>
           <Text style={{fontSize : 20, marginLeft : 5, fontFamily : 'Jalnan',marginTop : 5, color : 'orange'}}>🎉인기 게시물 Top 5🎉</Text>
     <View style={{flexDirection : 'row', marginBottom : 10}}>
+      
     <ScrollView
     horizontal={true}
     showsHorizontalScrollIndicator = {false}>
@@ -230,6 +287,29 @@ const SnsScreen = ({props}) => {
       })
       }
       </ScrollView>
+      
+    </View>
+    <View style={styles.serach}>
+    <TouchableOpacity style={{marginTop : 6,marginLeft : 5}} onPress={() => fetchPosts()}>
+         
+         <Ionicons name="arrow-back" size={25} color="black" />
+
+        </TouchableOpacity>
+        <View style={styles.container2}>
+			<View style={styles.row}>
+				<Icon name="search" size={20} color={theme.colors.searchIcon} />
+				<TextInput style={styles.input}
+         onChangeText={(text) => {setUsername(text)}}
+         placeholder=" 회원 이름 검색"
+          maxLength={10} />
+			</View>
+		</View>
+    <TouchableOpacity onPress={SearchName}>
+    <View style={styles.serachBtn}>
+    <Text style={{color : '#696969' , fontFamily : 'Jalnan'}}>검색</Text>
+
+    </View>
+    </TouchableOpacity>
     </View>
           <FlatList
             data={posts}
@@ -262,4 +342,39 @@ const SnsScreen = ({props}) => {
 
 export default SnsScreen;
 const styles = StyleSheet.create({
+  serach: {
+    flexDirection : 'row',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+
+row: {
+    backgroundColor: theme.colors.searchBackground,
+    flexDirection: 'row',
+    borderRadius: 5,
+    height: 35,
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    marginLeft : 10
+  },
+  input: {
+    fontSize: 15,
+    height: 45,
+    width : 230,
+   
+    color: theme.colors.searchText
+  },
+  serach: {
+    flexDirection : 'row',
+    marginTop: 10,
+    marginBottom: 10,
+  },serachBtn: {
+    marginLeft : 10,
+    width: 50,
+    height: 35,
+    backgroundColor: theme.colors.searchBackground,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+  },
 });

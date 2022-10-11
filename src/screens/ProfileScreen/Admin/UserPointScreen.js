@@ -160,6 +160,9 @@ const UserPointScreen = ({navigation, route}) => {
     return (
     <View style={styles.container}>
         <Text style={{fontSize:20, paddingBottom: 10, fontFamily : "Jalnan"}}>{route.params.name}님의 포인트 내역</Text>
+   
+        <Text style={{fontSize:15, fontFamily : "Jalnan",}}>현재 포인트 {route.params.point}</Text>
+   
         <View style={styles.title}>
         <View style={{width:40}}></View>
      
