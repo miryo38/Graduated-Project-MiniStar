@@ -37,7 +37,7 @@ const AddStore = ({navigation}) => {
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
-  const tags = ["background", ,"tool","minime", "minipiat", ]
+  const tags = ["벽지", ,"가구","미니미", "미니펫", ]
 
   const choosePhotoFromLibrary = () => {
     ImagePicker.openPicker({

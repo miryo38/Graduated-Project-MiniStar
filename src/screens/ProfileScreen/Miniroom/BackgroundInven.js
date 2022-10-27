@@ -18,6 +18,8 @@ const BackgroundInven = () => {
   const usersCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('background'); 
   const addBackground = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid);
   const [tool, setTool] = useState();
+  const navigation = useNavigation();
+
   const getShopData = async () => {
     try {
       const data = await usersCollection.get();
@@ -43,8 +45,12 @@ const BackgroundInven = () => {
     <View style={styles.container}>
       {
         tool?.map((row, idx) => {
-         {
-            return  <TouchableOpacity onPress={()=>{AddBackground(row.address)}} style={{}}>
+         { 
+            return  <TouchableOpacity onPress={() => {
+              navigation.navigate('CheckItem', {tool, idx});
+              //updateMinime(row.address, row.name, row.size);
+              // console.log(tool);
+            }}>
             <Image source ={{uri:row.address}} style={{width:70,height:70,}} resizeMode="contain" resizeMethod = 'resize' ></Image>
             </TouchableOpacity>;} 
       })

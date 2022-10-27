@@ -21,7 +21,7 @@ const MessagesScreen = ({navigation,item}) => {
         const list = [];
   
         
-       const querySanp = await firestore().collection('users').where('uid','!=', user.uid).get()
+       const querySanp = await firestore().collection('users').get()
           .then((querySnapshot) => {
             // console.log('Total Posts: ', querySnapshot.size);
   

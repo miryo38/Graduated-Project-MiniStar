@@ -59,6 +59,7 @@ const MinimiInven = () => {
                 onPress={() => {
                   navigation.navigate('CheckItem', {tool, idx});
                   //updateMinime(row.address, row.name, row.size);
+                  // console.log(tool);
                 }}>
                 <Image
                   source={{uri: row.address}}

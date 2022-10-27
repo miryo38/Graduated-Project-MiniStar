@@ -22,9 +22,8 @@ const CheckItem = ({navigation, route}) => {
   const {settooladdress, BuyItem, countItem, setcountItem, setwhfmrl} =
     useStore();
   const [userData, setUserData] = useState(null);
-
   const plant = route.params;
-
+  console.log(plant.tool);
   const [Item, setItem] = useState('');
   const Checktype = () => {
     if (plant.type == 'tool') return setItem('tool');
@@ -56,22 +55,55 @@ const CheckItem = ({navigation, route}) => {
       [
         {
           text: '아니요',
-          onPress: () => console.log('안해욧'),
+          onPress: () => console.log('안사요'),
         },
         {
           text: '네',
-          onPress: () =>
-            plant.type === 'tool'
-              ? pushTool(
-                  plant.tool[plant.idx].address,
-                  plant.tool[plant.idx].name,
-                  plant.tool[plant.idx].size,
-                )
-              : pushMinime(
-                  plant.tool[plant.idx].address,
-                  plant.tool[plant.idx].name,
-                  plant.tool[plant.idx].size,
-                ),
+          onPress: () => {
+            if (plant.tool[0].type == 'tool') {
+              pushTool(
+                plant.tool[plant.idx].address,
+                plant.tool[plant.idx].name,
+                plant.tool[plant.idx].size,
+              );
+            }
+            if (plant.tool[0].type == 'background') {
+              pushBackground(
+                plant.tool[plant.idx].address,
+                plant.tool[plant.idx].name,
+              );
+            }
+            if (plant.tool[0].type == 'minime') {
+              pushMinime(
+                plant.tool[plant.idx].address,
+                plant.tool[plant.idx].name,
+                plant.tool[plant.idx].size,
+              );
+            }
+            if (plant.tool[0].type == 'minipat') {
+              pushMinipat(
+                plant.tool[plant.idx].address1,
+                plant.tool[plant.idx].address2,
+                plant.tool[plant.idx].address3,
+                plant.tool[plant.idx].address4,
+                plant.tool[plant.idx].address5,
+                plant.tool[plant.idx].address6,
+                plant.tool[plant.idx].name,
+                plant.tool[plant.idx].price,
+              );
+            }
+          },
+          // plant.tool[0].type == 'tool'
+          //   ? pushTool(
+          //       plant.tool[plant.idx].address,
+          //       plant.tool[plant.idx].name,
+          //       plant.tool[plant.idx].size,
+          //     )
+          //   : pushMinime(
+          //       plant.tool[plant.idx].address,
+          //       plant.tool[plant.idx].name,
+          //       plant.tool[plant.idx].size,
+          //     )
         },
       ],
       {cancelable: false},
@@ -94,6 +126,7 @@ const CheckItem = ({navigation, route}) => {
         size: size,
       });
     settooladdress(address);
+    console.log('푸쉬툴');
     setcountItem();
     navigation.reset({
       routes: [
@@ -103,6 +136,27 @@ const CheckItem = ({navigation, route}) => {
       ],
     });
   };
+  const pushBackground = (newaddress, newname) => {
+    firestore()
+      .collection('miniroom')
+      .doc(firebase.auth().currentUser.uid)
+      .collection('room')
+      .doc(firebase.auth().currentUser.uid)
+      .collection('background')
+      .doc(firebase.auth().currentUser.uid + 'mid')
+      .update({address: newaddress, name: newname});
+    settooladdress(newaddress);
+    console.log('푸쉬미니미');
+    setcountItem();
+    navigation.reset({
+      routes: [
+        {
+          name: 'Miniroom',
+        },
+      ],
+    });
+  };
+
 
   const pushMinime = (newaddress, newname, size) => {
     firestore()
@@ -114,6 +168,7 @@ const CheckItem = ({navigation, route}) => {
       .doc(firebase.auth().currentUser.uid + 'mid')
       .update({address: newaddress, name: newname, size: size});
     settooladdress(newaddress);
+    console.log('푸쉬미니미');
     setcountItem();
     navigation.reset({
       routes: [
@@ -123,7 +178,44 @@ const CheckItem = ({navigation, route}) => {
       ],
     });
   };
-
+  const pushMinipat = (
+    address1,
+    address2,
+    address3,
+    address4,
+    address5,
+    address6,
+    name,
+    price,
+  ) => {
+    firestore()
+      .collection('miniroom')
+      .doc(firebase.auth().currentUser.uid)
+      .collection('room')
+      .doc(firebase.auth().currentUser.uid)
+      .collection('minipat')
+      .doc(firebase.auth().currentUser.uid + 'mid')
+      .update({
+        1: address1,
+        2: address2,
+        3: address3,
+        4: address4,
+        5: address5,
+        6: address6,
+        name: name,
+        price: price,
+      });
+    // /settooladdress(newaddress);
+    console.log('푸쉬미니펫');
+    setcountItem();
+    navigation.reset({
+      routes: [
+        {
+          name: 'Miniroom',
+        },
+      ],
+    });
+  };
   return (
     <SafeAreaView
       style={{
@@ -137,13 +229,18 @@ const CheckItem = ({navigation, route}) => {
             size={28}
             onPress={() => navigation.goBack()}
           /> */}
+
           <Text style={{fontSize: 18, marginTop: 3, fontFamily: 'Jalnan'}}>
             <Icons name="coins" size={18} /> {userData ? userData.point : ''}
           </Text>
         </View>
         <View style={style.imageContainer}>
           <Image
-            source={{uri: plant && plant.tool[plant.idx].address}}
+            source={{
+              uri:
+                (plant && plant.tool[plant.idx].address) ||
+                plant.tool[plant.idx].address1,
+            }}
             style={{resizeMode: 'contain', flex: 1, aspectRatio: 1}}
           />
         </View>

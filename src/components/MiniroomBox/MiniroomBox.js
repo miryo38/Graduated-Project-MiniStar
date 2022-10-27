@@ -6,7 +6,7 @@ import {
   Image,
   Text,
   Alert,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import React, {useRef, useState, useEffect} from 'react';
 import useStore from '../../../store/store';
@@ -35,7 +35,7 @@ const MiniroomBox = ({}) => {
     }
   };
   useEffect(() => {
-      getTool();
+    getTool();
   }, [countItem]);
   const DeleteToast = name => {
     Toast.show({
@@ -70,8 +70,8 @@ const MiniroomBox = ({}) => {
 
   return (
     <View style={{position: 'absolute'}}>
-      
-      {tool && tool.map((row, idx) => {
+      {tool &&
+        tool.map((row, idx) => {
           {
             return (
               <Draggable

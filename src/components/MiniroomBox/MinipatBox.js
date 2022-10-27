@@ -13,9 +13,10 @@ import firebase from '@react-native-firebase/app';
 import Draggable from 'react-native-draggable';
 import {useSelector} from 'react-redux';
 import {resolvePlugin} from '@babel/core';
-
+import Toast from 'react-native-toast-message';
 const MinipatBox = ({}) => {
   const [Minipat, setMinipat] = useState();
+  const [patCount, setpatCount] = useState(1);
   const addminipat = firestore()
     .collection('miniroom')
     .doc(firebase.auth().currentUser.uid)
@@ -36,7 +37,38 @@ const MinipatBox = ({}) => {
       console.log(error.message);
     }
   };
-
+  const showToast = () => {
+    Toast.show({
+      type: 'success',
+      text1: '포인트 획득완료!',
+      text2: `정상적으로 업데이트 했습니다!👋`,
+    });
+  };
+  const TakePoint = () => {
+    firestore()
+      .collection('users')
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then(documentSnapshot => {
+        if (documentSnapshot.exists) {
+          firestore()
+            .collection('users')
+            .doc(firebase.auth().currentUser.uid)
+            .update({
+              point: documentSnapshot.data().point + 300,
+            });
+        }
+      });
+    showToast();
+  };
+  const ShortPress = () => {
+    if (patCount < 6) {
+      setpatCount(patCount + 1);
+    } else {
+      setpatCount(1);
+      TakePoint();
+    }
+  };
   useEffect(() => {
     getMinipat();
     return () => {};
@@ -49,7 +81,9 @@ const MinipatBox = ({}) => {
           y={110}
           z={0}
           renderSize={80}
-          imageSource={{uri: `${Minipat[count]}`}}
+          // imageSource={{uri: `${Minipat[count]}`}}
+          imageSource={{uri: `${Minipat[patCount]}`}}
+          onShortPressRelease={ShortPress}
           shouldReverse={true}></Draggable>
       )}
     </View>
