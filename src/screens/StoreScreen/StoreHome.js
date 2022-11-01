@@ -1,4 +1,4 @@
-import React,{ useState,useEffect,useContext} from 'react';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
 import {
   View,
   SafeAreaView,
@@ -6,51 +6,72 @@ import {
   StyleSheet,
   FlatList,
   Image,
-  Dimensions
-  ,TouchableOpacity
+  Dimensions,
+  TouchableOpacity,
+  ScrollView,
+  RefreshControl,
 } from 'react-native';
 import {TextInput} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icons from 'react-native-vector-icons/FontAwesome5';
 import COLORS from '../StoreScreen/colors';
 import firestore from '@react-native-firebase/firestore';
-import { AuthContext } from '../../utils/AuthProvider';
+import {AuthContext} from '../../utils/AuthProvider';
 import useStore from '../../../store/store';
 
 const width = Dimensions.get('window').width / 2 - 30;
 
 const StoreHome = ({navigation}) => {
-  const usersCollection = firestore().collection('shops').doc('shopitems').collection('tool');
-  const usersCollectionM = firestore().collection('shops').doc('shopitems').collection('minime');
-  const usersCollectionB = firestore().collection('shops').doc('shopitems').collection('background');
-  const usersCollectionP = firestore().collection('shops').doc('shopitems').collection('minipat');
-  const categories = ['가구', '미니미', '배경','미니펫'];
-  
+  const usersCollection = firestore()
+    .collection('shops')
+    .doc('shopitems')
+    .collection('tool');
+  const usersCollectionM = firestore()
+    .collection('shops')
+    .doc('shopitems')
+    .collection('minime');
+  const usersCollectionB = firestore()
+    .collection('shops')
+    .doc('shopitems')
+    .collection('background');
+  const usersCollectionP = firestore()
+    .collection('shops')
+    .doc('shopitems')
+    .collection('minipat');
+  const categories = ['가구', '미니미', '배경', '미니펫'];
+
   const {user, logout} = useContext(AuthContext);
-  const {isPoint,setPoint} = useStore();
+  const {isPoint, setPoint} = useStore();
   const [catergoryIndex, setCategoryIndex] = useState(0);
   const [tool, setTool] = useState();
   const [minime, setminime] = useState();
   const [Background, setBackground] = useState();
   const [Minipat, setMinipat] = useState();
   const [userData, setUserData] = useState(null);
-  
-  const getUser = async() => {
+  const [refreshing, setRefreshing] = useState(false);
+  const wait = timeout => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  };
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
+  const getUser = async () => {
     const currentUser = await firestore()
-    .collection('users')
-    .doc(user.uid)
-    .get()
-    .then((documentSnapshot) => {
-      if( documentSnapshot.exists ) {
-        console.log('User Data', documentSnapshot.data());
-        setUserData(documentSnapshot.data());
-      }
-    })
-  }
+      .collection('users')
+      .doc(user.uid)
+      .get()
+      .then(documentSnapshot => {
+        if (documentSnapshot.exists) {
+          console.log('User Data', documentSnapshot.data());
+          setUserData(documentSnapshot.data());
+        }
+      });
+  };
   const getShopData = async () => {
     try {
       const data = await usersCollection.get();
-      setTool(data._docs.map(doc => ({ ...doc.data(), id: doc.id })));
+      setTool(data._docs.map(doc => ({...doc.data(), id: doc.id})));
       console.log('T');
     } catch (error) {
       console.log(error.message);
@@ -59,7 +80,7 @@ const StoreHome = ({navigation}) => {
   const getShopDataM = async () => {
     try {
       const data = await usersCollectionM.get();
-      setminime(data._docs.map(doc => ({ ...doc.data(), id: doc.id })));
+      setminime(data._docs.map(doc => ({...doc.data(), id: doc.id})));
       console.log('M');
     } catch (error) {
       console.log(error.message);
@@ -68,7 +89,7 @@ const StoreHome = ({navigation}) => {
   const getShopDataB = async () => {
     try {
       const data = await usersCollectionB.get();
-      setBackground(data._docs.map(doc => ({ ...doc.data(), id: doc.id })));
+      setBackground(data._docs.map(doc => ({...doc.data(), id: doc.id})));
       console.log('B');
     } catch (error) {
       console.log(error.message);
@@ -77,7 +98,7 @@ const StoreHome = ({navigation}) => {
   const getShopDataP = async () => {
     try {
       const data = await usersCollectionP.get();
-      setMinipat(data._docs.map(doc => ({ ...doc.data(), id: doc.id })));
+      setMinipat(data._docs.map(doc => ({...doc.data(), id: doc.id})));
       console.log('P');
     } catch (error) {
       console.log(error.message);
@@ -92,10 +113,9 @@ const StoreHome = ({navigation}) => {
   }, []);
   useEffect(() => {
     getUser();
-  }, [isPoint]);
+  }, [isPoint, refreshing]);
   const CategoryList = () => {
     return (
-      
       <View style={style.categoryContainer}>
         {categories.map((item, index) => (
           <TouchableOpacity
@@ -124,82 +144,85 @@ const StoreHome = ({navigation}) => {
           <View
             style={{
               height: 90,
-              marginTop:15,
+              marginTop: 15,
               alignItems: 'center',
             }}>
-              {
-              plant.type=="minipat" ? // 미니펫은 이미지가 5개가 필요해서 따로 검사
+            {plant.type == 'minipat' ? ( // 미니펫은 이미지가 5개가 필요해서 따로 검사
               <Image
-              source={{uri:plant.address1}}
-              style={{flex: 1, resizeMode: 'contain',aspectRatio: 1.0,}} resizeMethod='resize'
-            />
-              : <Image
-              source={{uri:plant.address}}
-              style={{flex: 1, resizeMode: 'contain',aspectRatio: 1.0,}} resizeMethod='resize'
-            />
-            }
+                source={{uri: plant.address1}}
+                style={{flex: 1, resizeMode: 'contain', aspectRatio: 1.0}}
+                resizeMethod="resize"
+              />
+            ) : (
+              <Image
+                source={{uri: plant.address}}
+                style={{flex: 1, resizeMode: 'contain', aspectRatio: 1.0}}
+                resizeMethod="resize"
+              />
+            )}
           </View>
-          <View style={{marginTop:13}}>
-          <Text style={{ fontSize: 17, marginTop: 10, fontFamily: "Jalnan",}}>
-            {plant.name}
-          </Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginTop: 5,
-            }}>
-            <Text style={{fontSize: 19, fontFamily: "Jalnan",}}>
-            ₩{plant.price}
+          <View style={{marginTop: 13}}>
+            <Text style={{fontSize: 17, marginTop: 10, fontFamily: 'Jalnan'}}>
+              {plant.name}
             </Text>
-            
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginTop: 5,
+              }}>
+              <Text style={{fontSize: 19, fontFamily: 'Jalnan'}}>
+                ₩{plant.price}
+              </Text>
+            </View>
           </View>
-          </View>
-          
         </View>
       </TouchableOpacity>
     );
   };
   return (
-    <SafeAreaView
-      style={{flex: 1, paddingHorizontal: 20, backgroundColor: COLORS.white}}>
-      <View style={style.header}>
-        <View style={{flexDirection:'row',width:'100%'}}>        
-          <Text style={{fontSize: 21, fontFamily: "Jalnan",}}>미니룸 스토어</Text>
-
+    <ScrollView
+      style={{flex: 1}}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
+      <SafeAreaView
+        style={{flex: 1, paddingHorizontal: 20, backgroundColor: COLORS.white}}>
+        <View style={style.header}>
+          <View style={{flexDirection: 'row', width: '100%'}}>
+            <Text style={{fontSize: 21, fontFamily: 'Jalnan'}}>
+              미니룸 스토어
+            </Text>
+          </View>
         </View>
-      </View>
-      <View style={{alignSelf:'flex-end'}}>
-      <Text style={{fontSize: 18, fontFamily: "Jalnan",}}> <Icons
-                name="coins"
-                size={18}/>  {userData ? userData.point : ''}</Text>
-      </View>
+        <View style={{alignSelf: 'flex-end'}}>
+          <Text style={{fontSize: 18, fontFamily: 'Jalnan'}}>
+            {' '}
+            <Icons name="coins" size={18} /> {userData ? userData.point : ''}
+          </Text>
+        </View>
 
-     
-  
-      
-      <CategoryList />
-      <FlatList
-        columnWrapperStyle={{justifyContent: 'space-between'}}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          marginTop: 10,
-          paddingBottom: 50,
-        }}
-        numColumns={2}
-        data={
-          (function() {
+        <CategoryList />
+        <FlatList
+          columnWrapperStyle={{justifyContent: 'space-between'}}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            marginTop: 10,
+            paddingBottom: 50,
+          }}
+          numColumns={2}
+          data={(function () {
             if (catergoryIndex === 0) return tool;
             if (catergoryIndex === 1) return minime;
             if (catergoryIndex === 2) return Background;
             if (catergoryIndex === 3) return Minipat;
-          })()
-        }
-        renderItem={({item}) => {
-          return <Card plant={item} />;
-        }}
-      />
-    </SafeAreaView>
+          })()}
+          renderItem={({item}) => {
+            return <Card plant={item} />;
+          }}
+        />
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 
@@ -210,7 +233,7 @@ const style = StyleSheet.create({
     marginBottom: 20,
     justifyContent: 'space-between',
   },
-  categoryText: {fontSize: 16, color: 'grey', fontFamily: "Jalnan", },
+  categoryText: {fontSize: 16, color: 'grey', fontFamily: 'Jalnan'},
   categoryTextSelected: {
     color: COLORS.orange,
     paddingBottom: 5,
@@ -228,7 +251,7 @@ const style = StyleSheet.create({
   },
   header: {
     marginTop: 20,
-    width:'100%',
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -243,7 +266,7 @@ const style = StyleSheet.create({
   input: {
     fontSize: 16,
     flex: 1,
-    fontFamily: "Jalnan",
+    fontFamily: 'Jalnan',
     color: COLORS.dark,
   },
   sortBtn: {

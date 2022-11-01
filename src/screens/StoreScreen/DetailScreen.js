@@ -87,7 +87,7 @@ const DetailsScreen = ({navigation, route}) => {
     setPoint(userData.point - plant.price);
   };
   const addItem = async () => {
-    if (plant.type == 'tool' || plant.type == 'minime' ) {
+    if (plant.type == 'tool' || plant.type == 'minime') {
       try {
         console.log(Item);
         await firestore()
