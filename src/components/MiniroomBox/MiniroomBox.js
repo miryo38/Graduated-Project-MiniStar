@@ -78,6 +78,7 @@ const MiniroomBox = ({}) => {
                 x={row.getx}
                 y={row.gety}
                 z={idx}
+                resize="cover"
                 renderSize={row.size}
                 imageSource={{uri: `${row.address}`}}
                 onDragRelease={(e, g, b) => {

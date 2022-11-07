@@ -69,7 +69,6 @@ const SearchScreen = ({navigation}) => {
   const getPosts = async () => {
     const querySanp = await firestore()
       .collection('posts')
-      .where('tag', '==', '배경')
       .orderBy('postTime', 'desc')
       .get();
     const allposts = querySanp.docs.map(docSnap => docSnap.data());
