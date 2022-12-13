@@ -1,4 +1,4 @@
-import React, {useEffect, useState,useCallback} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   View,
   ScrollView,
@@ -8,76 +8,66 @@ import {
   SafeAreaView,
   Alert,
   RefreshControl,
-  Image
+  Image,
 } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import PostCard from '../../utils/PostCard';
 
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
-import  firebase from '@react-native-firebase/app';
+import firebase from '@react-native-firebase/app';
 import {Container} from '../../../styles/FeedStyles';
-import { AuthContext } from '../../utils/AuthProvider';
+import {AuthContext} from '../../utils/AuthProvider';
 import useStore from '../../../store/store';
 import Loading from '../../utils/Loading';
 
-
-const SnsScreen = ({navigation,route}) => {
+const SnsScreen = ({navigation, route}) => {
   const [refreshing, setRefreshing] = useState(false);
   const [posts, setPosts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleted, setDeleted] = useState(false);
-  const [currentUserLike, setCurrentUserLike] = useState(false)
-  const {Post,SetPost} = useStore(); // 0522새로고침용
-  const [ready, setReady] = useState(true)
-  const [Bestposts,setBestPosts] = useState(null)
+  const [currentUserLike, setCurrentUserLike] = useState(false);
+  const {Post, SetPost} = useStore(); // 0522새로고침용
+  const [ready, setReady] = useState(true);
+  const [Bestposts, setBestPosts] = useState(null);
 
-  const wait = (timeout) => {
+  const wait = timeout => {
     return new Promise(resolve => setTimeout(resolve, timeout));
-  }
+  };
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     wait(2000).then(() => setRefreshing(false));
   }, []);
-    
-  const getBestPosts = async ()=>{
+
+  const getBestPosts = async () => {
     const querySanp = await firestore()
-    .collection('posts')
-    .orderBy('likes', 'desc')
-    .limit((5))
-    .get()
-    const allposts = querySanp.docs.map(docSnap=>docSnap.data())
-   //  console.log(allusers)
-   setBestPosts(allposts)
-  } 
+      .collection('posts')
+      .orderBy('likes', 'desc')
+      .limit(5)
+      .get();
+    const allposts = querySanp.docs.map(docSnap => docSnap.data());
+    //  console.log(allusers)
+    setBestPosts(allposts);
+  };
 
   const fetchPosts = async () => {
     try {
       const list = [];
 
-      
       await firestore()
-        
-      .collection("posts")
-      .orderBy('likes', 'desc')
-      .limit((5))
-      .get()
-        .then((querySnapshot) => {
+        .collection('posts')
+        .orderBy('likes', 'desc')
+        .limit(5)
+        .get()
+        .then(querySnapshot => {
           // console.log('Total Posts: ', querySnapshot.size);
 
-          querySnapshot.forEach((doc) => {
-            const {
-              post,
-              uid,
-              postImg,
-              postTime,
-              likes,  
-              comments,
-              postid,
-            } = doc.data();
+          querySnapshot.forEach(doc => {
+            const {post, uid, postImg, postTime, likes, comments, postid} =
+              doc.data();
             list.push({
               id: doc.id,
               uid,
@@ -93,40 +83,36 @@ const SnsScreen = ({navigation,route}) => {
         });
 
       setPosts(list);
-      
+
       if (loading) {
         setLoading(false);
       }
-
-    
     } catch (e) {
       console.log(e);
     }
   };
 
-
-
   useEffect(() => {
-    setTimeout(()=>{
-      setReady(false)
-      },1000)   
+    setTimeout(() => {
+      setReady(false);
+    }, 1000);
     fetchPosts();
     setDeleted(false);
     getBestPosts();
-  }, [deleted,refreshing,Post]);
+  }, [deleted, refreshing, Post]);
 
-  const handleDelete = (postId) => {
+  const handleDelete = postId => {
     Alert.alert(
       '글 삭제하기',
       '확실합니까?',
       [
         {
-          text: 'Cancel',
+          text: '아니오',
           onPress: () => console.log('Cancel Pressed!'),
           style: 'cancel',
         },
         {
-          text: 'Confirm',
+          text: '예',
           onPress: () => deletePost(postId),
         },
       ],
@@ -134,14 +120,14 @@ const SnsScreen = ({navigation,route}) => {
     );
   };
 
-  const deletePost = (postId) => {
+  const deletePost = postId => {
     console.log('Current Post Id: ', postId);
 
     firestore()
       .collection('posts')
       .doc(postId)
       .get()
-      .then((documentSnapshot) => {
+      .then(documentSnapshot => {
         if (documentSnapshot.exists) {
           const {postImg} = documentSnapshot.data();
 
@@ -155,7 +141,7 @@ const SnsScreen = ({navigation,route}) => {
                 console.log(`${postImg} 성공적으로 삭제되었습니다.`);
                 deleteFirestoreData(postId);
               })
-              .catch((e) => {
+              .catch(e => {
                 console.log('Error while deleting the image. ', e);
               });
             // If the post image is not available
@@ -166,7 +152,7 @@ const SnsScreen = ({navigation,route}) => {
       });
   };
 
-  const deleteFirestoreData = (postId) => {
+  const deleteFirestoreData = postId => {
     firestore()
       .collection('posts')
       .doc(postId)
@@ -178,44 +164,36 @@ const SnsScreen = ({navigation,route}) => {
         );
         setDeleted(true);
       })
-      .catch((e) => console.log('Error deleting posst.', e));
+      .catch(e => console.log('Error deleting posst.', e));
   };
 
   const ListHeader = () => {
     return null;
   };
-  return (
-    ready ? <Loading/> :  (
-
-        <Container>
-          <FlatList
-            data={posts}
-            renderItem={({item}) => (
-              <PostCard
-                item={item}
-                onDelete={handleDelete}
-                onPress={() =>
-                  {
-                  navigation.navigate('SNSProfile', {uid: item.uid})
-                  
-                  }
-                }
-              />
-            )}
-            keyExtractor={(item) => item.id}
-            ListHeaderComponent={ListHeader}
-            ListFooterComponent={ListHeader}
-            showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-              />
-            }
+  return ready ? (
+    <Loading />
+  ) : (
+    <Container>
+      <FlatList
+        data={posts}
+        renderItem={({item}) => (
+          <PostCard
+            item={item}
+            onDelete={handleDelete}
+            onPress={() => {
+              navigation.navigate('SNSProfile', {uid: item.uid});
+            }}
           />
-        </Container>
-    
-    )
+        )}
+        keyExtractor={item => item.id}
+        ListHeaderComponent={ListHeader}
+        ListFooterComponent={ListHeader}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      />
+    </Container>
   );
 };
 

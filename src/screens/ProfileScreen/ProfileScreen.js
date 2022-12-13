@@ -16,7 +16,7 @@ import {
   SafeAreaView,
   Alert,
   Button,
-  RefreshControl
+  RefreshControl,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 
@@ -51,13 +51,22 @@ const ProfileScreen = ({navigation, route}) => {
   const [CommentData, setCommentData] = useState([]);
   const {countItem, BuyItem} = useStore();
   const isFocused = useIsFocused();
-
-  
+  const [refreshing, setRefreshing] = useState(false);
   const dispatch = useDispatch();
+  const wait = timeout => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  };
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
   const CheckadminEmail = useSelector(state => {
+    return !!state.user.email === 'admin@gmail.com';
+  });
+  const CheckadminEmail2 = useSelector(state => {
     return state.user.email;
   });
-  console.log('이메일은~~', CheckadminEmail);
+  console.log('이메일은~~', CheckadminEmail, CheckadminEmail2);
   const showToast = name => {
     Toast.show({
       type: 'success',
@@ -218,7 +227,7 @@ const ProfileScreen = ({navigation, route}) => {
     getRequest();
     getComment();
     navigation.addListener('focus', () => setLoading(!loading));
-  }, [navigation, loading, countItem, BuyItem, isFocused]);
+  }, [navigation, loading, countItem, BuyItem, isFocused, refreshing]);
 
   const FriendRequest = () => {
     Alert.alert(
@@ -315,7 +324,7 @@ const ProfileScreen = ({navigation, route}) => {
   ) : (
     <View style={{flex: 1, backgroundColor: '#fff'}}>
       {(() => {
-        if (CheckadminEmail && CheckadminEmail == 'admin@gmail.com')
+        if (CheckadminEmail2 === 'admin@gmail.com')
           // 관리자 구분
           return (
             <View style={{flex: 1, backgroundColor: '#fff'}}>
@@ -363,7 +372,10 @@ const ProfileScreen = ({navigation, route}) => {
                     style={{flexDirection: 'row'}}
                     onPress={() => AddStorePressed()}>
                     <Icon name="shop" size={30} />
-                    <Text style={styles.userBtnTxt2}> 미니룸 스토어 아이템 관리</Text>
+                    <Text style={styles.userBtnTxt2}>
+                      {' '}
+                      미니룸 스토어 아이템 관리
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -372,34 +384,32 @@ const ProfileScreen = ({navigation, route}) => {
         else {
           return (
             <View style={{flex: 1, backgroundColor: '#fff'}}>
-              
               <View style={styles.title}>
                 {route.params ? (
                   <>
-                  <View style={{flexDirection : 'row', marginTop : 10}}>
-                    <TouchableOpacity
-                      style={{marginLeft: 15, justifyContent: 'center'}}
-                      onPress={() => navigation.goBack()}>
-                      <Ionicons name="arrow-back" size={25} color="#fff" />
-                    </TouchableOpacity>
-                    <View
-                      style={{
-                        flex: 1,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}>
-                      <Text style={styles.titleText}>
-                        {userData ? userData.name : ''}님의 미니홈피
-                      </Text>
+                    <View style={{flexDirection: 'row', marginTop: 10}}>
+                      <TouchableOpacity
+                        style={{marginLeft: 15, justifyContent: 'center'}}
+                        onPress={() => navigation.goBack()}>
+                        <Ionicons name="arrow-back" size={25} color="#fff" />
+                      </TouchableOpacity>
+                      <View
+                        style={{
+                          flex: 1,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}>
+                        <Text style={styles.titleText}>
+                          {userData ? userData.name : ''}님의 미니홈피
+                        </Text>
+                      </View>
                     </View>
-                    </View>
-                    
                   </>
                 ) : (
                   <>
                     <View
                       style={{
-                        marginTop : 10,
+                        marginTop: 10,
                         flexDirection: 'row',
                         justifyContent: 'space-between',
                         alignItems: 'center',
@@ -410,7 +420,6 @@ const ProfileScreen = ({navigation, route}) => {
                           {userData ? userData.name : ''}님의 미니홈피
                         </Text>
                       </View>
-                      
                     </View>
                   </>
                 )}
@@ -418,6 +427,12 @@ const ProfileScreen = ({navigation, route}) => {
 
               <ScrollView
                 style={styles.container}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                }
                 contentContainerStyle={{
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -522,7 +537,7 @@ const ProfileScreen = ({navigation, route}) => {
                         <TouchableOpacity onPress={() => onEditFriendPressed()}>
                           <View style={styles.userInfoItem}>
                             <Text style={styles.userInfoTitle2}>
-                              친구{' '}
+                              친구 목록{' '}
                               <Text style={styles.userInfoTitle}>
                                 {friendData.length}
                               </Text>
@@ -533,7 +548,7 @@ const ProfileScreen = ({navigation, route}) => {
                         <TouchableOpacity onPress={() => onRequsetPressed()}>
                           <View style={styles.userInfoItem}>
                             <Text style={styles.userInfoTitle2}>
-                              요청 목록{' '}
+                              친구 요청{' '}
                               <Text style={styles.userInfoTitle}>
                                 {RequestData.length}
                               </Text>
