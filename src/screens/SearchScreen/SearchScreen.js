@@ -44,7 +44,18 @@ const SearchScreen = ({navigation}) => {
     }
     
 
-      
+    const getUser = async() => {
+      await firestore()
+      .collection('users')
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then((documentSnapshot) => {
+        if( documentSnapshot.exists ) {
+          console.log('User Data', documentSnapshot.data());
+          setUserData(documentSnapshot.data());
+        }
+      })
+    }
   
 
 const getCounts = async() => {
@@ -68,11 +79,11 @@ const getCounts = async() => {
 
 const getPosts = async ()=>{
     
-  const querySanp = await firestore().collection('posts').where('tag', '==' , userData ? userData.InterSearch : '동물').orderBy('postTime', 'desc').get()
+  const querySanp = await firestore().collection('posts').where('tag', '==' , "배경").orderBy('postTime', 'desc').get()
   const allposts = querySanp.docs.map(docSnap=>docSnap.data())
  setchangePosts(allposts)
 
-
+  
 }
 
 const getAllPosts = async ()=>{
@@ -335,18 +346,7 @@ const handleSearchTextChange =  async () => {
 };
 
 
-const getUser = async() => {
-  await firestore()
-  .collection('users')
-  .doc(firebase.auth().currentUser.uid)
-  .get()
-  .then((documentSnapshot) => {
-    if( documentSnapshot.exists ) {
-      console.log('User Data', documentSnapshot.data());
-      setUserData(documentSnapshot.data());
-    }
-  })
-}
+
 const TagList =  async (tags) => {
   try {
     const list = [];

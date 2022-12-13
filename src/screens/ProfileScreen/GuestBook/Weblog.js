@@ -27,6 +27,7 @@ const Weblog = ({navigation,route}) => {
     .collection('guestbook')
     .doc(route.params ? route.params.uid : user.uid)
     .collection('comment')
+    .orderBy('commentTime', 'desc')
     .get()
 
     const allcomments = querySanp.docs.map(docSnap=>docSnap.data())
