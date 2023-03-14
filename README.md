@@ -6,12 +6,15 @@
 <img src="https://img.shields.io/badge/Android Studio-3DDC84?style=flat-square&logo=AndroidStudio&logoColor=white"/> 
 <img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"/> 
 <img src="https://img.shields.io/badge/Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=white"/> 
+
 <h3>Platforms & Languages</h3>
 <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=JavaScript&logoColor=white"/>
 <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=Node.js&logoColor=white"/>
 <img src="https://img.shields.io/badge/npm-CB3837?style=flat-square&logo=npm&logoColor=white"/>
+
 <h3>DataBase</h3>
 <img src="https://img.shields.io/badge/FireStore-FFCA28?style=flat-square&logo=firebase&logoColor=white"/>
+
 <h3>실행방법</h3>npm install => npm run android<br/>
 
 <h3>시연영상</h3>[유튜브링크](https://www.youtube.com/watch?v=s7urJ4cahts&themeRefresh=1)<br/>
