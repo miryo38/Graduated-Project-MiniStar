@@ -1,7 +1,7 @@
 # MiniStar
 
 
-<img src="https://img.shields.io/badge/ReactNative-61DAFB?style=flat-square&logo=react&logoColor=white"/> 왜줄바꿈
+<img src="https://img.shields.io/badge/ReactNative-61DAFB?style=flat-square&logo=react&logoColor=white"/>
 <img src="https://img.shields.io/badge/Visual Studio Code-007ACC?style=flat-square&logo=VisualStudioCode&logoColor=white"/>
 <img src="https://img.shields.io/badge/Android Studio-3DDC84?style=flat-square&logo=AndroidStudio&logoColor=white"/>
 <img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"/>
