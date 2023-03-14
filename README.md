@@ -1,7 +1,7 @@
 # react-native design
 
 <h3>버전관리</h3>
-<img src="https://img.shields.io/badge/React-61DAFB-Native-61DAFB?style=flat-square&logo=react&logoColor=white"/>
+<img src="https://img.shields.io/badge/React-Native-61DAFB?style=flat-square&logo=react&logoColor=white"/>
 react-native-cli: 2.0.1<br>
 node.js: 16.6.0<br>
 npm : 7.19.1<br>
