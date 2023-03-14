@@ -9,7 +9,7 @@ java version "1.8.0_211"<br>
 javac 1.8.0_211<br>
 Android Debug Bridge version 1.0.41<br>
 Version 31.0.3-7562133<br>
-
+<img src="https://img.shields.io/badge/Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=white"/>
 <h3>실행방법</h3>npm install => npm run android<br/>
 
 <h3>시연영상</h3>[유튜브링크](https://www.youtube.com/watch?v=s7urJ4cahts&themeRefresh=1)<br/>
