@@ -18,7 +18,7 @@ Version 31.0.3-7562133<br>
  <p align="center">
  
 <img src="https://user-images.githubusercontent.com/80196373/200231533-a7b431aa-4596-4a02-ada9-807db30583e6.png" width="100%" height="500">
-<img src="https://user-images.githubusercontent.com/80084425/224938456-a0d12a04-d30a-476d-88d8-5b6c81160cbd.png" width="400" height="400"/>
+<p align="center"><img src="https://user-images.githubusercontent.com/80084425/224938456-a0d12a04-d30a-476d-88d8-5b6c81160cbd.png" width="400" height="400"/></p>
 <img src="https://user-images.githubusercontent.com/80196373/182438584-4d982534-fb00-45e1-a008-9621126fa07b.png" width="200" height="400"/>
 <img src="https://user-images.githubusercontent.com/80196373/182438720-a0613a3b-1542-4dd8-88a4-1a21a1b10042.png" width="200" height="400"/>
 <img src="https://user-images.githubusercontent.com/80196373/182438734-9cbbd694-94c9-4230-8f92-aac4442b1551.png" width="200" height="400"/>
