@@ -1,5 +1,6 @@
 
 <h3>Tools</h3>
+! [React] (https://img.shields.io/badge/-React-222222?style=for-the-badge&logo=react)
 ! [ReactNative]("https://img.shields.io/badge/ReactNative-61DAFB?style=flat-square&logo=react&logoColor=white")
 <img src="https://img.shields.io/badge/Visual Studio Code-007ACC?style=flat-square&logo=VisualStudioCode&logoColor=white"/> 
 <img src="https://img.shields.io/badge/Android Studio-3DDC84?style=flat-square&logo=AndroidStudio&logoColor=white"/> 
